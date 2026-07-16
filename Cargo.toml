@@ -1,0 +1,20 @@
+[package]
+name="logos-engine"
+version="0.1.0"
+edition="2024"
+rust-version="1.89"
+license="MIT OR Apache-2.0"
+repository="https://github.com/LiGoldragon/logos-engine"
+description="CoreLogos Rust projection daemon and thin CLI"
+[dependencies]
+kameo={git="https://github.com/LiGoldragon/kameo.git",rev="f491b45d7dcb55e5837eddde3d5d7ca8ceaa9f01",default-features=false,features=["macros"]}
+name-table={git="https://github.com/LiGoldragon/name-table.git",rev="c3237f77c087e6feab49d6cf34971cebc14a11e6"}
+projection-core-logos={package="core-logos",git="https://github.com/LiGoldragon/core-logos.git",rev="17cbd7596df2"}
+rkyv={version="0.8",features=["bytecheck"]}
+signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="c6cfc29069e7c29abb2e5a3acbbdb955bcf8a8dc"}
+signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="a86cb480ff9505b0c068fc0152de352be99d0ef2"}
+textual-rust={git="https://github.com/LiGoldragon/textual-rust.git",rev="b0ea9fb61495f26629f5522ce26c79a4af3a31f2"}
+tokio={version="1",features=["macros","rt-multi-thread","net","io-util"]}
+thiserror="2"
+[lints.rust]
+unsafe_code="forbid"
