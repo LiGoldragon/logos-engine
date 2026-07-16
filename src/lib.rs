@@ -1,7 +1,4 @@
-use std::{
-    convert::Infallible,
-    path::{Path, PathBuf},
-};
+use std::{convert::Infallible, path::PathBuf};
 
 use kameo::{
     Actor,
@@ -11,8 +8,8 @@ use kameo::{
 use name_table::NameTable;
 use signal_logos::{ProjectionEvent, Rejection, Reply, Request};
 use signal_sema_storage::{
-    DocumentKind, DocumentPayload, Reply as SemaReply, Request as SemaRequest,
-    SubscriptionIdentifier,
+    DocumentKind, DocumentPayload, FrameMessage, Reply as SemaReply, Request as SemaRequest,
+    SubscriptionIdentifier, Wire,
 };
 use textual_rust::RustSource;
 use tokio::{
@@ -32,22 +29,50 @@ pub enum Error {
 }
 type Result<T> = std::result::Result<T, Error>;
 
-async fn exchange(path: &Path, request: &SemaRequest) -> Result<SemaReply> {
-    let mut stream = UnixStream::connect(path).await?;
-    let bytes = signal_sema_storage::Wire::encode_request(request)
-        .map_err(|error| Error::Projection(error.to_string()))?;
-    stream.write_u32_le(bytes.len() as u32).await?;
-    stream.write_all(&bytes).await?;
-    let length = stream.read_u32_le().await? as usize;
-    let mut bytes = vec![0; length];
-    stream.read_exact(&mut bytes).await?;
-    rkyv::from_bytes::<SemaReply, rkyv::rancor::Error>(&bytes)
-        .map_err(|error| Error::Projection(error.to_string()))
-}
-
 pub struct SemaPlane {
     socket: PathBuf,
     reads: u64,
+}
+impl SemaPlane {
+    async fn read_frame(&self, stream: &mut UnixStream) -> Result<Vec<u8>> {
+        let length = stream.read_u32().await? as usize;
+        let mut frame = Vec::with_capacity(length + 4);
+        frame.extend_from_slice(&(length as u32).to_be_bytes());
+        frame.resize(length + 4, 0);
+        stream.read_exact(&mut frame[4..]).await?;
+        Ok(frame)
+    }
+
+    async fn exchange(&self, request: &SemaRequest) -> Result<SemaReply> {
+        let mut stream = UnixStream::connect(&self.socket).await?;
+        stream
+            .write_all(
+                &Wire::frame_current_handshake_request()
+                    .map_err(|error| Error::Projection(error.to_string()))?,
+            )
+            .await?;
+        let handshake = Wire::decode_frame(&self.read_frame(&mut stream).await?)
+            .map_err(|error| Error::Projection(error.to_string()))?;
+        if !handshake.is_accepted_handshake() {
+            return Err(Error::Projection("Sema rejected frame protocol".into()));
+        }
+        let payload =
+            Wire::encode_request(request).map_err(|error| Error::Projection(error.to_string()))?;
+        stream
+            .write_all(
+                &Wire::frame_request(payload, self.reads)
+                    .map_err(|error| Error::Projection(error.to_string()))?,
+            )
+            .await?;
+        let FrameMessage::Reply { payload, .. } =
+            Wire::decode_frame(&self.read_frame(&mut stream).await?)
+                .map_err(|error| Error::Projection(error.to_string()))?
+        else {
+            return Err(Error::Projection("Sema returned a non-reply frame".into()));
+        };
+        rkyv::from_bytes::<SemaReply, rkyv::rancor::Error>(&payload)
+            .map_err(|error| Error::Projection(error.to_string()))
+    }
 }
 impl Actor for SemaPlane {
     type Args = Self;
@@ -64,7 +89,7 @@ impl Message<Fetch> for SemaPlane {
     type Reply = Result<SemaReply>;
     async fn handle(&mut self, message: Fetch, _: &mut Context<Self, Self::Reply>) -> Self::Reply {
         self.reads += 1;
-        exchange(&self.socket, &message.0).await
+        self.exchange(&message.0).await
     }
 }
 
