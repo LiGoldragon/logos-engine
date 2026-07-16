@@ -372,6 +372,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -525,9 +531,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
+name = "signal-frame"
+version = "0.3.0"
+source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=f46872e7e8edae5264c892443d415a273b231234#f46872e7e8edae5264c892443d415a273b231234"
+dependencies = [
+ "paste",
+ "rkyv",
+ "signal-frame-macros",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-frame-macros"
+version = "0.1.1"
+source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=f46872e7e8edae5264c892443d415a273b231234#f46872e7e8edae5264c892443d415a273b231234"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "signal-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=ab9ad486d9a66916089d5cda268ca742fbba5c37#ab9ad486d9a66916089d5cda268ca742fbba5c37"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=7cdf11faa1aab8b1836f293aefc643274924e883#7cdf11faa1aab8b1836f293aefc643274924e883"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -537,7 +564,7 @@ dependencies = [
 [[package]]
 name = "signal-nomos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=ebcfd036ee38bb8251f816fd06fbf52d3f0d140a#ebcfd036ee38bb8251f816fd06fbf52d3f0d140a"
+source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=57d78ed31a56c636bb56deedc61ebdf4c59d980f#57d78ed31a56c636bb56deedc61ebdf4c59d980f"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -547,13 +574,14 @@ dependencies = [
 [[package]]
 name = "signal-sema-storage"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=1bd593f4040307bd4d1db76ee15aa67d00efe1e6#1bd593f4040307bd4d1db76ee15aa67d00efe1e6"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=17d90e2a08cd926b4e4096cb48386542036e25a7#17d90e2a08cd926b4e4096cb48386542036e25a7"
 dependencies = [
- "blake3",
+ "content-identity",
  "core-logos",
  "core-schema",
  "name-table",
  "rkyv",
+ "signal-frame",
  "thiserror",
 ]
 
