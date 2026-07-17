@@ -138,7 +138,13 @@ impl Message<Dispatch> for NexusPlane {
                 };
                 let names = NameTable::from_archive_bytes(&names.0)
                     .map_err(|error| Error::Projection(error.to_string()))?;
-                let mut rust = String::new();
+                // The generated module opens with the fixed head — the `// @generated`
+                // marker, the four scalar aliases, and the cfg-gated NOTA import —
+                // rendered from Nomos's fixed prelude package through the same
+                // prettyplease projection, ahead of the document's declarations.
+                let mut rust = core_nomos::ModuleHead::fixed()
+                    .render()
+                    .map_err(|error| Error::Projection(error.to_string()))?;
                 for item in items {
                     rust.push_str(
                         RustSource::project_item(&item, &names)
