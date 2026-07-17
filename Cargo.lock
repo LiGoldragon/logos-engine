@@ -104,18 +104,7 @@ dependencies = [
 [[package]]
 name = "core-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=17cbd7596df203e0717fe079b7688cc60ec05e4b#17cbd7596df203e0717fe079b7688cc60ec05e4b"
-dependencies = [
- "content-identity",
- "name-table",
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "core-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=f7dd7d6bf155c7f9fff790ae692964764909b433#f7dd7d6bf155c7f9fff790ae692964764909b433"
+source = "git+https://github.com/LiGoldragon/core-logos.git?rev=4edf5de942105a1b870f8738968a9d141a4304cc#4edf5de942105a1b870f8738968a9d141a4304cc"
 dependencies = [
  "content-identity",
  "name-table",
@@ -126,21 +115,21 @@ dependencies = [
 [[package]]
 name = "core-nomos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=db89b45b721edd7105539b057afdde3d833c1241#db89b45b721edd7105539b057afdde3d833c1241"
+source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=9b5d7360906a5c7ced08d600a700fcafea9eae5b#9b5d7360906a5c7ced08d600a700fcafea9eae5b"
 dependencies = [
  "content-identity",
- "core-logos 0.1.0 (git+https://github.com/LiGoldragon/core-logos.git?rev=f7dd7d6bf155c7f9fff790ae692964764909b433)",
+ "core-logos",
  "core-schema",
  "name-table",
  "rkyv",
- "textual-rust 0.1.0 (git+https://github.com/LiGoldragon/textual-rust.git?rev=b80c52f6ef8e95d500fa026204b6acfe8f129937)",
+ "textual-rust",
  "thiserror",
 ]
 
 [[package]]
 name = "core-schema"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-schema.git?rev=566544eda56a52fb1b5185d8c634dd9a9f2a47e0#566544eda56a52fb1b5185d8c634dd9a9f2a47e0"
+source = "git+https://github.com/LiGoldragon/core-schema.git?rev=72d1c98596f2bba96a80d8c75b16780c4a0dfefe#72d1c98596f2bba96a80d8c75b16780c4a0dfefe"
 dependencies = [
  "content-identity",
  "name-table",
@@ -401,7 +390,7 @@ dependencies = [
  "signal-logos",
  "signal-nomos",
  "signal-sema-storage",
- "textual-rust 0.1.0 (git+https://github.com/LiGoldragon/textual-rust.git?rev=571b76f5eedd47c5cdedbd1b00cbe5bb7bef3c7d)",
+ "textual-rust",
  "thiserror",
  "tokio",
 ]
@@ -679,7 +668,7 @@ dependencies = [
 [[package]]
 name = "signal-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=9c119916aaa77f98b0968102419a500f62ba6cce#9c119916aaa77f98b0968102419a500f62ba6cce"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=60988fc4790b3c4ab84c2ec98c50aa012096e4f9#60988fc4790b3c4ab84c2ec98c50aa012096e4f9"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -689,7 +678,7 @@ dependencies = [
 [[package]]
 name = "signal-nomos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=afdf62f371f5b52eab5122dc0de6d1bf40ba753c#afdf62f371f5b52eab5122dc0de6d1bf40ba753c"
+source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=88c214ed35c9346cd5d399b2d51c1dd9313a3d59#88c214ed35c9346cd5d399b2d51c1dd9313a3d59"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -699,10 +688,10 @@ dependencies = [
 [[package]]
 name = "signal-sema-storage"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=bd6cd6c4f2f020ad04427fc8ca86ca22d9cf4e6c#bd6cd6c4f2f020ad04427fc8ca86ca22d9cf4e6c"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=fe925a0afeb0b5da1dad06bef06e3db4b46bac38#fe925a0afeb0b5da1dad06bef06e3db4b46bac38"
 dependencies = [
  "content-identity",
- "core-logos 0.1.0 (git+https://github.com/LiGoldragon/core-logos.git?rev=17cbd7596df203e0717fe079b7688cc60ec05e4b)",
+ "core-logos",
  "core-schema",
  "name-table",
  "rkyv",
@@ -758,25 +747,10 @@ dependencies = [
 [[package]]
 name = "textual-rust"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=571b76f5eedd47c5cdedbd1b00cbe5bb7bef3c7d#571b76f5eedd47c5cdedbd1b00cbe5bb7bef3c7d"
+source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=56eb2ab30026206288e80fd7f37a6d4010536e0c#56eb2ab30026206288e80fd7f37a6d4010536e0c"
 dependencies = [
  "content-identity",
- "core-logos 0.1.0 (git+https://github.com/LiGoldragon/core-logos.git?rev=17cbd7596df203e0717fe079b7688cc60ec05e4b)",
- "name-table",
- "prettyplease",
- "proc-macro2",
- "quote",
- "syn",
- "thiserror",
-]
-
-[[package]]
-name = "textual-rust"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=b80c52f6ef8e95d500fa026204b6acfe8f129937#b80c52f6ef8e95d500fa026204b6acfe8f129937"
-dependencies = [
- "content-identity",
- "core-logos 0.1.0 (git+https://github.com/LiGoldragon/core-logos.git?rev=f7dd7d6bf155c7f9fff790ae692964764909b433)",
+ "core-logos",
  "name-table",
  "prettyplease",
  "proc-macro2",
