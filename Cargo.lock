@@ -104,7 +104,7 @@ dependencies = [
 [[package]]
 name = "core-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=4edf5de942105a1b870f8738968a9d141a4304cc#4edf5de942105a1b870f8738968a9d141a4304cc"
+source = "git+https://github.com/LiGoldragon/core-logos.git?rev=0c6df526a84a6f0856f8dfe2718a7567503133d2#0c6df526a84a6f0856f8dfe2718a7567503133d2"
 dependencies = [
  "content-identity",
  "name-table",
@@ -115,7 +115,7 @@ dependencies = [
 [[package]]
 name = "core-nomos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=9b5d7360906a5c7ced08d600a700fcafea9eae5b#9b5d7360906a5c7ced08d600a700fcafea9eae5b"
+source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=8ef3985ba0f769d1b4b04ea1130b3df7536e488f#8ef3985ba0f769d1b4b04ea1130b3df7536e488f"
 dependencies = [
  "content-identity",
  "core-logos",
@@ -129,7 +129,7 @@ dependencies = [
 [[package]]
 name = "core-schema"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-schema.git?rev=72d1c98596f2bba96a80d8c75b16780c4a0dfefe#72d1c98596f2bba96a80d8c75b16780c4a0dfefe"
+source = "git+https://github.com/LiGoldragon/core-schema.git?rev=8507b6562d980a24dd8aada9e23f9ae7ef08920a#8507b6562d980a24dd8aada9e23f9ae7ef08920a"
 dependencies = [
  "content-identity",
  "name-table",
@@ -668,7 +668,7 @@ dependencies = [
 [[package]]
 name = "signal-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=60988fc4790b3c4ab84c2ec98c50aa012096e4f9#60988fc4790b3c4ab84c2ec98c50aa012096e4f9"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=43269306602e823395bdeffe2a653fc41f1f5eb2#43269306602e823395bdeffe2a653fc41f1f5eb2"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -678,7 +678,7 @@ dependencies = [
 [[package]]
 name = "signal-nomos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=88c214ed35c9346cd5d399b2d51c1dd9313a3d59#88c214ed35c9346cd5d399b2d51c1dd9313a3d59"
+source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=243ac371683c0045a7de56e235533bc4fc0b84eb#243ac371683c0045a7de56e235533bc4fc0b84eb"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -688,7 +688,7 @@ dependencies = [
 [[package]]
 name = "signal-sema-storage"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=fe925a0afeb0b5da1dad06bef06e3db4b46bac38#fe925a0afeb0b5da1dad06bef06e3db4b46bac38"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=54178a10f893cc0eef09e62f371487f09823937f#54178a10f893cc0eef09e62f371487f09823937f"
 dependencies = [
  "content-identity",
  "core-logos",
@@ -747,7 +747,7 @@ dependencies = [
 [[package]]
 name = "textual-rust"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=56eb2ab30026206288e80fd7f37a6d4010536e0c#56eb2ab30026206288e80fd7f37a6d4010536e0c"
+source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=1322abbb462eaad8a9d831759c440b3c43c127f9#1322abbb462eaad8a9d831759c440b3c43c127f9"
 dependencies = [
  "content-identity",
  "core-logos",
