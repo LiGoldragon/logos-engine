@@ -7,15 +7,15 @@ license="MIT OR Apache-2.0"
 repository="https://github.com/LiGoldragon/logos-engine"
 description="CoreLogos Rust projection daemon and thin CLI"
 [dependencies]
-core-nomos={git="https://github.com/LiGoldragon/core-nomos.git",rev="cb9705de181b50053b4e634a3b9ad4798103164b"}
+core-nomos={git="https://github.com/LiGoldragon/core-nomos.git",rev="f0b6360aecb2a7191bac421ebd40e03e6f21a0ce"}
 kameo={git="https://github.com/LiGoldragon/kameo.git",rev="f491b45d7dcb55e5837eddde3d5d7ca8ceaa9f01",default-features=false,features=["macros"]}
-name-table={git="https://github.com/LiGoldragon/name-table.git",rev="c3237f77c087e6feab49d6cf34971cebc14a11e6"}
+name-table={git="https://github.com/LiGoldragon/protos.git",rev="7e60f60fbc144265cf5ac1ec238b87744967d4eb"}
 notify="8"
 rkyv={version="0.8",features=["bytecheck"]}
-signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="c248235c4adfea86b7754b7ce71b056bc90088b0"}
-signal-nomos={git="https://github.com/LiGoldragon/signal-nomos.git",rev="2c09647bb08825806c1485ba11aca844d4b60fff"}
-signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="31ab48608a3c2eab0733dcb16a3351251a70789d"}
-textual-rust={git="https://github.com/LiGoldragon/textual-rust.git",rev="ee7859ff10b0710fab9e87672c66d8c889b67c63"}
+signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="f7a88bec80a4857b9c1098ce24e0df9fc06dfefd"}
+signal-nomos={git="https://github.com/LiGoldragon/signal-nomos.git",rev="f72d5983fcb2ba3bb7a99140ac812390e59d51ac"}
+signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="21c3ad78227ec847bda37cfa2494619cdf1b0b70"}
+textual-rust={git="https://github.com/LiGoldragon/textual-rust.git",rev="95a8a29ead1d1b41fbf555cabb2c1abb56709c53"}
 tokio={version="1",features=["macros","rt-multi-thread","net","io-util","sync","time"]}
 thiserror="2"
 [lints.rust]
