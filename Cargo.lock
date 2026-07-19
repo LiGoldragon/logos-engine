@@ -94,7 +94,7 @@ checksum = "3d52eff69cd5e647efe296129160853a42795992097e8af39800e1060caeea9b"
 [[package]]
 name = "content-identity"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/protos.git?rev=7e60f60fbc144265cf5ac1ec238b87744967d4eb#7e60f60fbc144265cf5ac1ec238b87744967d4eb"
+source = "git+https://github.com/LiGoldragon/protos.git?rev=f12a80c85d9d27ac4432b86b7d3095e8387c6fa9#f12a80c85d9d27ac4432b86b7d3095e8387c6fa9"
 dependencies = [
  "blake3",
  "rkyv",
@@ -103,8 +103,8 @@ dependencies = [
 
 [[package]]
 name = "core-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=c25b5f58205adc34b9ec940634d0f50fdfb0cc3d#c25b5f58205adc34b9ec940634d0f50fdfb0cc3d"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/core-logos.git?rev=22b12a474c86cf812c89b41054d4e26e870ec70c#22b12a474c86cf812c89b41054d4e26e870ec70c"
 dependencies = [
  "content-identity",
  "name-table",
@@ -114,8 +114,8 @@ dependencies = [
 
 [[package]]
 name = "core-nomos"
-version = "0.3.0"
-source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=f0b6360aecb2a7191bac421ebd40e03e6f21a0ce#f0b6360aecb2a7191bac421ebd40e03e6f21a0ce"
+version = "0.4.0"
+source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=e4e7ba8cb34452401e18d8b72a3aac69f208f993#e4e7ba8cb34452401e18d8b72a3aac69f208f993"
 dependencies = [
  "content-identity",
  "core-logos",
@@ -129,8 +129,8 @@ dependencies = [
 
 [[package]]
 name = "core-schema"
-version = "0.3.0"
-source = "git+https://github.com/LiGoldragon/core-schema.git?rev=26a480777a7b95e6bb825ce14d4527596bf95dbf#26a480777a7b95e6bb825ce14d4527596bf95dbf"
+version = "0.4.0"
+source = "git+https://github.com/LiGoldragon/core-schema.git?rev=1122370fbe3f65c56957431714a19c3920365466#1122370fbe3f65c56957431714a19c3920365466"
 dependencies = [
  "content-identity",
  "name-table",
@@ -381,7 +381,7 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
 name = "logos-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "core-nomos",
  "kameo",
@@ -437,7 +437,7 @@ dependencies = [
 [[package]]
 name = "name-table"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/protos.git?rev=7e60f60fbc144265cf5ac1ec238b87744967d4eb#7e60f60fbc144265cf5ac1ec238b87744967d4eb"
+source = "git+https://github.com/LiGoldragon/protos.git?rev=f12a80c85d9d27ac4432b86b7d3095e8387c6fa9#f12a80c85d9d27ac4432b86b7d3095e8387c6fa9"
 dependencies = [
  "content-identity",
  "rkyv",
@@ -549,7 +549,7 @@ dependencies = [
 [[package]]
 name = "raw-discovery"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/protos.git?rev=7e60f60fbc144265cf5ac1ec238b87744967d4eb#7e60f60fbc144265cf5ac1ec238b87744967d4eb"
+source = "git+https://github.com/LiGoldragon/protos.git?rev=f12a80c85d9d27ac4432b86b7d3095e8387c6fa9#f12a80c85d9d27ac4432b86b7d3095e8387c6fa9"
 dependencies = [
  "content-identity",
  "rkyv",
@@ -669,8 +669,8 @@ dependencies = [
 
 [[package]]
 name = "signal-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=f7a88bec80a4857b9c1098ce24e0df9fc06dfefd#f7a88bec80a4857b9c1098ce24e0df9fc06dfefd"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=6fbdf886785b6cc7a19bd2770688d8ca45ab6360#6fbdf886785b6cc7a19bd2770688d8ca45ab6360"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -679,8 +679,8 @@ dependencies = [
 
 [[package]]
 name = "signal-nomos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=f72d5983fcb2ba3bb7a99140ac812390e59d51ac#f72d5983fcb2ba3bb7a99140ac812390e59d51ac"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=7c8972fc9cc25c6a72a6ae31d0aeb92c418659f1#7c8972fc9cc25c6a72a6ae31d0aeb92c418659f1"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -689,8 +689,8 @@ dependencies = [
 
 [[package]]
 name = "signal-sema-storage"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=21c3ad78227ec847bda37cfa2494619cdf1b0b70#21c3ad78227ec847bda37cfa2494619cdf1b0b70"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=25ac4fd0abf5d58ab9fce1f10d58220b62bef902#25ac4fd0abf5d58ab9fce1f10d58220b62bef902"
 dependencies = [
  "content-identity",
  "core-logos",
@@ -725,8 +725,8 @@ dependencies = [
 
 [[package]]
 name = "structural-codec"
-version = "0.2.0"
-source = "git+https://github.com/LiGoldragon/protos.git?rev=7e60f60fbc144265cf5ac1ec238b87744967d4eb#7e60f60fbc144265cf5ac1ec238b87744967d4eb"
+version = "0.3.0"
+source = "git+https://github.com/LiGoldragon/protos.git?rev=f12a80c85d9d27ac4432b86b7d3095e8387c6fa9#f12a80c85d9d27ac4432b86b7d3095e8387c6fa9"
 dependencies = [
  "content-identity",
  "name-table",
@@ -748,8 +748,8 @@ dependencies = [
 
 [[package]]
 name = "textual-rust"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=95a8a29ead1d1b41fbf555cabb2c1abb56709c53#95a8a29ead1d1b41fbf555cabb2c1abb56709c53"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=f264e9465ad2988550a296419471a4c18386d496#f264e9465ad2988550a296419471a4c18386d496"
 dependencies = [
  "content-identity",
  "core-logos",
