@@ -144,7 +144,9 @@ impl Relay {
     async fn supervise(nomos: PathBuf, runtime: Runtime, readiness_sender: oneshot::Sender<()>) {
         let mut readiness_sender = Some(readiness_sender);
         loop {
-            let _ = Self::connection(&nomos, &runtime, &mut readiness_sender).await;
+            if let Err(error) = Self::connection(&nomos, &runtime, &mut readiness_sender).await {
+                eprintln!("logos relay failed: {error}");
+            }
             if SocketReadiness::new(nomos.clone()).changed().await.is_err() {
                 return;
             }
