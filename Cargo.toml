@@ -7,6 +7,7 @@ license="MIT OR Apache-2.0"
 repository="https://github.com/LiGoldragon/logos-engine"
 description="CoreLogos Rust projection daemon and thin CLI"
 [dependencies]
+core-logos={git="https://github.com/LiGoldragon/core-logos.git",rev="7fabf6d42f458963c6b4bf526284ba88087a71c7"}
 core-nomos={git="https://github.com/LiGoldragon/core-nomos.git",rev="440466e2cefb5f7d589c4ca3f9bde8637f6bede7"}
 kameo={git="https://github.com/LiGoldragon/kameo.git",rev="f491b45d7dcb55e5837eddde3d5d7ca8ceaa9f01",default-features=false,features=["macros"]}
 name-table={git="https://github.com/LiGoldragon/protos.git",rev="e9983d6220856a011886145ed0ef0cc41c9bf597"}

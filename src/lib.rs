@@ -1,5 +1,6 @@
 use std::{convert::Infallible, path::PathBuf};
 
+use core_logos::standard_name_table;
 use kameo::{
     Actor,
     actor::{ActorRef, Spawn},
@@ -8,8 +9,8 @@ use kameo::{
 use name_table::NameTable;
 use signal_logos::{ProjectionEvent, Rejection, Reply, Request};
 use signal_sema_storage::{
-    DocumentKind, DocumentPayload, FrameMessage, Reply as SemaReply, Request as SemaRequest,
-    SubscriptionIdentifier, Wire,
+    DocumentKind, DocumentPayload, FrameMessage, NameTableBytes, Reply as SemaReply,
+    Request as SemaRequest, SubscriptionIdentifier, Wire,
 };
 use textual_rust::RustSource;
 use tokio::{
@@ -98,6 +99,22 @@ pub struct NexusPlane {
     events: broadcast::Sender<ProjectionEvent>,
     projected: u64,
 }
+impl NexusPlane {
+    /// Recompose the fixed Logos vocabulary after reading a persisted Logos home slice.
+    ///
+    /// Persisted NameTable bytes intentionally contain only their owned `Logos` slice.
+    /// Rust projection also names fixed `LogosStandard` objects, so the projection
+    /// boundary restores that independently owned slice before resolving any item.
+    fn projection_names(bytes: &NameTableBytes) -> Result<NameTable> {
+        let stored = NameTable::from_archive_bytes(&bytes.0)
+            .map_err(|error| Error::Projection(error.to_string()))?;
+        let standards =
+            standard_name_table().map_err(|error| Error::Projection(error.to_string()))?;
+        stored
+            .compose(&standards)
+            .map_err(|error| Error::Projection(error.to_string()))
+    }
+}
 impl Actor for NexusPlane {
     type Args = Self;
     type Error = Infallible;
@@ -136,8 +153,7 @@ impl Message<Dispatch> for NexusPlane {
                 let DocumentPayload::Logos { items, names } = document.payload else {
                     return Ok(Reply::Rejected(Rejection::WrongDocumentKind));
                 };
-                let names = NameTable::from_archive_bytes(&names.0)
-                    .map_err(|error| Error::Projection(error.to_string()))?;
+                let names = Self::projection_names(&names)?;
                 // The generated module opens with Nomos's fixed head: the
                 // `// @generated` marker and canonical support imports. It contains
                 // no transparent type aliases and is projected before the document's
@@ -258,5 +274,35 @@ impl Runtime {
     }
     pub fn subscribe(&self) -> broadcast::Receiver<ProjectionEvent> {
         self.events.subscribe()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use core_logos::INTEGER;
+    use name_table::{IdentifierNamespace, NameTable};
+    use signal_sema_storage::NameTableBytes;
+
+    use super::NexusPlane;
+
+    #[test]
+    fn persisted_logos_names_recompose_the_standard_slice_for_projection() {
+        let standards = core_logos::standard_name_table().expect("standard vocabulary");
+        let names = NameTable::new(IdentifierNamespace::Logos)
+            .compose(&standards)
+            .expect("compose standard vocabulary");
+        let persisted = NameTableBytes(
+            names
+                .to_archive_bytes()
+                .expect("archive Logos slice")
+                .to_vec(),
+        );
+
+        let restored = NexusPlane::projection_names(&persisted).expect("restore projection names");
+
+        assert_eq!(
+            restored.resolve(INTEGER).expect("resolve Integer").as_str(),
+            "Integer"
+        );
     }
 }
