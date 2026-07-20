@@ -7,7 +7,7 @@ use signal_sema_storage::{ContentHash, FixtureScope, FrameMessage, Wire};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{UnixListener, UnixStream},
-    sync::mpsc,
+    sync::{mpsc, oneshot},
 };
 
 struct FramedSocket {
@@ -111,7 +111,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             let listener = UnixListener::bind(&socket)?;
             let runtime = Runtime::new(sema);
             let relay_runtime = runtime.clone();
-            tokio::spawn(async move { Relay::supervise(nomos, relay_runtime).await; });
+            let (readiness_sender, readiness_receiver) = oneshot::channel();
+            tokio::spawn(async move {
+                Relay::supervise(nomos, relay_runtime, readiness_sender).await;
+            });
+            readiness_receiver
+                .await
+                .map_err(|_| std::io::Error::other("Nomos relay stopped before subscribing"))?;
             println!("READY {}", socket.display());
             loop {
                 let (stream, _) = listener.accept().await?;
@@ -135,9 +141,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
 struct Relay;
 impl Relay {
-    async fn supervise(nomos: PathBuf, runtime: Runtime) {
+    async fn supervise(nomos: PathBuf, runtime: Runtime, readiness_sender: oneshot::Sender<()>) {
+        let mut readiness_sender = Some(readiness_sender);
         loop {
-            let _ = Self::connection(&nomos, &runtime).await;
+            let _ = Self::connection(&nomos, &runtime, &mut readiness_sender).await;
             if SocketReadiness::new(nomos.clone()).changed().await.is_err() {
                 return;
             }
@@ -146,6 +153,7 @@ impl Relay {
     async fn connection(
         nomos: &PathBuf,
         runtime: &Runtime,
+        readiness_sender: &mut Option<oneshot::Sender<()>>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = FramedSocket::connect(nomos).await?;
         socket
@@ -156,6 +164,9 @@ impl Relay {
             )?)
             .await?;
         let _: signal_nomos::Reply = Decoder::value(&socket.reply_payload().await?)?;
+        if let Some(readiness_sender) = readiness_sender.take() {
+            let _ = readiness_sender.send(());
+        }
         loop {
             if let signal_nomos::Reply::Event(event) =
                 Decoder::value::<signal_nomos::Reply>(&socket.reply_payload().await?)?
