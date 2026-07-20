@@ -1,5 +1,5 @@
 {
-  description = "core-nomos — the stringless Core of Nomos: macros as typed data lowering CoreSchema to CoreLogos, with the real generated Rust as the acceptance oracle";
+  description = "logos-engine — encoded Logos Rust projection daemon and thin CLI";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
