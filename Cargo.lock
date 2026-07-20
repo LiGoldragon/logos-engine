@@ -94,16 +94,6 @@ checksum = "3d52eff69cd5e647efe296129160853a42795992097e8af39800e1060caeea9b"
 [[package]]
 name = "content-identity"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450#6cc0408cdb96f174cc8fdf6ca23420038de28450"
-dependencies = [
- "blake3",
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "content-identity"
-version = "0.1.0"
 source = "git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597#e9983d6220856a011886145ed0ef0cc41c9bf597"
 dependencies = [
  "blake3",
@@ -113,22 +103,11 @@ dependencies = [
 
 [[package]]
 name = "core-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=2b9ed8fb758de951a76af35a65b4b53b9d210583#2b9ed8fb758de951a76af35a65b4b53b9d210583"
-dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450)",
- "name-table 0.1.0",
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "core-logos"
 version = "0.4.0"
 source = "git+https://github.com/LiGoldragon/core-logos.git?rev=7fabf6d42f458963c6b4bf526284ba88087a71c7#7fabf6d42f458963c6b4bf526284ba88087a71c7"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
- "name-table 0.5.0",
+ "content-identity",
+ "name-table",
  "rkyv",
  "thiserror",
 ]
@@ -138,26 +117,13 @@ name = "core-nomos"
 version = "0.4.0"
 source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=82d59002598805389c2cee1ed6c7cc59be084f9b#82d59002598805389c2cee1ed6c7cc59be084f9b"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
- "core-logos 0.4.0",
- "core-schema 0.6.0",
- "name-table 0.5.0",
+ "content-identity",
+ "core-logos",
+ "core-schema",
+ "name-table",
  "rkyv",
- "structural-codec 0.5.0",
+ "structural-codec",
  "textual-rust",
- "thiserror",
-]
-
-[[package]]
-name = "core-schema"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-schema.git?rev=d3cdee9ac2c17de16a7745c9854344d8bbcde64e#d3cdee9ac2c17de16a7745c9854344d8bbcde64e"
-dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450)",
- "name-table 0.1.0",
- "raw-discovery 0.1.0 (git+https://github.com/LiGoldragon/raw-discovery.git?rev=a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8)",
- "rkyv",
- "structural-codec 0.1.0",
  "thiserror",
 ]
 
@@ -166,11 +132,11 @@ name = "core-schema"
 version = "0.6.0"
 source = "git+https://github.com/LiGoldragon/core-schema.git?rev=cee7f0873c8ccfba0afe09cbb40de531c9e73077#cee7f0873c8ccfba0afe09cbb40de531c9e73077"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
- "name-table 0.5.0",
- "raw-discovery 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
+ "content-identity",
+ "name-table",
+ "raw-discovery",
  "rkyv",
- "structural-codec 0.5.0",
+ "structural-codec",
  "thiserror",
 ]
 
@@ -415,11 +381,11 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
 name = "logos-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "core-nomos",
  "kameo",
- "name-table 0.5.0",
+ "name-table",
  "notify",
  "rkyv",
  "signal-logos",
@@ -470,20 +436,10 @@ dependencies = [
 
 [[package]]
 name = "name-table"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/name-table.git?rev=c3237f77c087e6feab49d6cf34971cebc14a11e6#c3237f77c087e6feab49d6cf34971cebc14a11e6"
-dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450)",
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "name-table"
 version = "0.5.0"
 source = "git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597#e9983d6220856a011886145ed0ef0cc41c9bf597"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
+ "content-identity",
  "rkyv",
  "thiserror",
 ]
@@ -593,18 +549,9 @@ dependencies = [
 [[package]]
 name = "raw-discovery"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/raw-discovery.git?rev=a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8#a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8"
-dependencies = [
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "raw-discovery"
-version = "0.1.0"
 source = "git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597#e9983d6220856a011886145ed0ef0cc41c9bf597"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
+ "content-identity",
  "rkyv",
  "thiserror",
 ]
@@ -723,7 +670,7 @@ dependencies = [
 [[package]]
 name = "signal-logos"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=c248235c4adfea86b7754b7ce71b056bc90088b0#c248235c4adfea86b7754b7ce71b056bc90088b0"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=811a85e287efef8472f76a0d810902b0b6e4c21d#811a85e287efef8472f76a0d810902b0b6e4c21d"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -732,8 +679,8 @@ dependencies = [
 
 [[package]]
 name = "signal-nomos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=2c09647bb08825806c1485ba11aca844d4b60fff#2c09647bb08825806c1485ba11aca844d4b60fff"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=e23379576c91b7ce78617a8328301afed5d41c79#e23379576c91b7ce78617a8328301afed5d41c79"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -742,13 +689,13 @@ dependencies = [
 
 [[package]]
 name = "signal-sema-storage"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=31ab48608a3c2eab0733dcb16a3351251a70789d#31ab48608a3c2eab0733dcb16a3351251a70789d"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=4fa7256fe5bfe6d4d85b3acceb028d3ae529f6ef#4fa7256fe5bfe6d4d85b3acceb028d3ae529f6ef"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450)",
- "core-logos 0.1.0",
- "core-schema 0.1.0",
- "name-table 0.1.0",
+ "content-identity",
+ "core-logos",
+ "core-schema",
+ "name-table",
  "rkyv",
  "signal-frame",
  "thiserror",
@@ -778,24 +725,12 @@ dependencies = [
 
 [[package]]
 name = "structural-codec"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/structural-codec.git?rev=104f92454a5ba88b376fa706a9fe38c4a4b65ee0#104f92454a5ba88b376fa706a9fe38c4a4b65ee0"
-dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450)",
- "name-table 0.1.0",
- "raw-discovery 0.1.0 (git+https://github.com/LiGoldragon/raw-discovery.git?rev=a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8)",
- "rkyv",
- "thiserror",
-]
-
-[[package]]
-name = "structural-codec"
 version = "0.5.0"
 source = "git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597#e9983d6220856a011886145ed0ef0cc41c9bf597"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
- "name-table 0.5.0",
- "raw-discovery 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
+ "content-identity",
+ "name-table",
+ "raw-discovery",
  "rkyv",
  "thiserror",
 ]
@@ -816,9 +751,9 @@ name = "textual-rust"
 version = "0.2.0"
 source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=89536fe677d45f2624cd5e6e4675fb4314fff309#89536fe677d45f2624cd5e6e4675fb4314fff309"
 dependencies = [
- "content-identity 0.1.0 (git+https://github.com/LiGoldragon/protos.git?rev=e9983d6220856a011886145ed0ef0cc41c9bf597)",
- "core-logos 0.4.0",
- "name-table 0.5.0",
+ "content-identity",
+ "core-logos",
+ "name-table",
  "prettyplease",
  "proc-macro2",
  "quote",

@@ -10,14 +10,12 @@ use tokio::{
     sync::mpsc,
 };
 
-type AnyError = Box<dyn std::error::Error + Send + Sync>;
-
 struct FramedSocket {
     stream: UnixStream,
     sequence: u64,
 }
 impl FramedSocket {
-    async fn connect(path: &PathBuf) -> Result<Self, AnyError> {
+    async fn connect(path: &PathBuf) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = Self {
             stream: UnixStream::connect(path).await?,
             sequence: 0,
@@ -31,7 +29,7 @@ impl FramedSocket {
         }
         Ok(socket)
     }
-    async fn accept(stream: UnixStream) -> Result<Self, AnyError> {
+    async fn accept(stream: UnixStream) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = Self {
             stream,
             sequence: 0,
@@ -46,7 +44,7 @@ impl FramedSocket {
             .await?;
         Ok(socket)
     }
-    async fn read_frame(&mut self) -> Result<Vec<u8>, AnyError> {
+    async fn read_frame(&mut self) -> Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
         let length = self.stream.read_u32().await? as usize;
         let mut frame = Vec::with_capacity(length + 4);
         frame.extend_from_slice(&(length as u32).to_be_bytes());
@@ -54,13 +52,16 @@ impl FramedSocket {
         self.stream.read_exact(&mut frame[4..]).await?;
         Ok(frame)
     }
-    async fn request(&mut self, payload: Vec<u8>) -> Result<(), AnyError> {
+    async fn request(
+        &mut self,
+        payload: Vec<u8>,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let frame = Wire::frame_request(payload, self.sequence)?;
         self.sequence += 1;
         self.stream.write_all(&frame).await?;
         Ok(())
     }
-    async fn reply_payload(&mut self) -> Result<Vec<u8>, AnyError> {
+    async fn reply_payload(&mut self) -> Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
         let FrameMessage::Reply { payload, .. } = Wire::decode_frame(&self.read_frame().await?)?
         else {
             return Err("expected shared reply frame".into());
@@ -76,7 +77,7 @@ impl SocketReadiness {
     fn new(path: PathBuf) -> Self {
         Self { path }
     }
-    async fn changed(&self) -> Result<(), AnyError> {
+    async fn changed(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let parent = self
             .path
             .parent()
@@ -98,7 +99,7 @@ impl SocketReadiness {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), AnyError> {
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut arguments = env::args().skip(1);
     match arguments.next().as_deref() {
         Some("daemon") => {
@@ -142,7 +143,10 @@ impl Relay {
             }
         }
     }
-    async fn connection(nomos: &PathBuf, runtime: &Runtime) -> Result<(), AnyError> {
+    async fn connection(
+        nomos: &PathBuf,
+        runtime: &Runtime,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = FramedSocket::connect(nomos).await?;
         socket
             .request(signal_nomos::encode_request(
@@ -169,7 +173,10 @@ impl Relay {
 
 struct Server;
 impl Server {
-    async fn serve(stream: UnixStream, runtime: Runtime) -> Result<(), AnyError> {
+    async fn serve(
+        stream: UnixStream,
+        runtime: Runtime,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = FramedSocket::accept(stream).await?;
         let FrameMessage::Request { exchange, payload } =
             Wire::decode_frame(&socket.read_frame().await?)?
@@ -203,12 +210,15 @@ impl Server {
 
 struct Client;
 impl Client {
-    async fn exchange(path: &PathBuf, request: &Request) -> Result<Reply, AnyError> {
+    async fn exchange(
+        path: &PathBuf,
+        request: &Request,
+    ) -> Result<Reply, Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = FramedSocket::connect(path).await?;
         socket.request(encode_request(request)?).await?;
         Decoder::value(&socket.reply_payload().await?)
     }
-    async fn subscribe(path: &PathBuf) -> Result<(), AnyError> {
+    async fn subscribe(path: &PathBuf) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut socket = FramedSocket::connect(path).await?;
         socket
             .request(encode_request(&Request::Subscribe {
@@ -226,7 +236,7 @@ impl Client {
 
 struct Decoder;
 impl Decoder {
-    fn value<T>(bytes: &[u8]) -> Result<T, AnyError>
+    fn value<T>(bytes: &[u8]) -> Result<T, Box<dyn std::error::Error + Send + Sync>>
     where
         T: rkyv::Archive,
         T::Archived: for<'a> rkyv::bytecheck::CheckBytes<
@@ -239,7 +249,7 @@ impl Decoder {
 
 struct Parser;
 impl Parser {
-    fn hash(value: &str) -> Result<[u8; 32], AnyError> {
+    fn hash(value: &str) -> Result<[u8; 32], Box<dyn std::error::Error + Send + Sync>> {
         if value.len() != 64 {
             return Err("hash must have 64 hexadecimal digits".into());
         }

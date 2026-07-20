@@ -1,6 +1,6 @@
 [package]
 name="logos-engine"
-version="0.1.0"
+version="0.2.0"
 edition="2024"
 rust-version="1.89"
 license="MIT OR Apache-2.0"
@@ -12,9 +12,9 @@ kameo={git="https://github.com/LiGoldragon/kameo.git",rev="f491b45d7dcb55e5837ed
 name-table={git="https://github.com/LiGoldragon/protos.git",rev="e9983d6220856a011886145ed0ef0cc41c9bf597"}
 notify="8"
 rkyv={version="0.8",features=["bytecheck"]}
-signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="c248235c4adfea86b7754b7ce71b056bc90088b0"}
-signal-nomos={git="https://github.com/LiGoldragon/signal-nomos.git",rev="2c09647bb08825806c1485ba11aca844d4b60fff"}
-signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="31ab48608a3c2eab0733dcb16a3351251a70789d"}
+signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="811a85e287efef8472f76a0d810902b0b6e4c21d"}
+signal-nomos={git="https://github.com/LiGoldragon/signal-nomos.git",rev="e23379576c91b7ce78617a8328301afed5d41c79"}
+signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="4fa7256fe5bfe6d4d85b3acceb028d3ae529f6ef"}
 textual-rust={git="https://github.com/LiGoldragon/textual-rust.git",rev="89536fe677d45f2624cd5e6e4675fb4314fff309"}
 tokio={version="1",features=["macros","rt-multi-thread","net","io-util","sync","time"]}
 thiserror="2"
