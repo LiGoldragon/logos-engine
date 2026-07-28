@@ -1,5 +1,16 @@
 # logos-engine architecture
-A real daemon and thin CLI. Signal → Nexus → SEMA Kameo actors fetch CoreLogos from central Sema and project it through the real TextualRust codec. The producer closure now uses one full exact CoreLogos revision, so projection consumes the stored typed item directly.
+
+A real daemon and thin CLI. In the currently wired legacy topology,
+Signal → Nexus → SEMA Kameo actors fetch CoreLogos through the central socket
+and project it through the real TextualRust codec. The producer closure uses
+one full exact CoreLogos revision, so projection consumes the stored typed
+item directly.
+
+The approved target is a stateful Logos daemon whose own embedded sema
+database stores its state. A separate small translator daemon owns only shared
+naming and encodedID allocation. The current socket path remains in place
+until a separately designed storage migration lands; it is not the target
+storage contract.
 
 ## The generated-module head
 
