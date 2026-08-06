@@ -35,6 +35,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bs58"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf88ba1141d185c399bee5288d850d63b8369520c1eafc32a0430b5b6c287bf4"
+dependencies = [
+ "tinyvec",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -93,8 +102,8 @@ checksum = "3d52eff69cd5e647efe296129160853a42795992097e8af39800e1060caeea9b"
 
 [[package]]
 name = "content-identity"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/content-identity.git?rev=6cc0408cdb96f174cc8fdf6ca23420038de28450#6cc0408cdb96f174cc8fdf6ca23420038de28450"
+version = "0.3.0"
+source = "git+https://github.com/LiGoldragon/content-identity.git?rev=24b43bae5d9748b0e7f679c6ec9f85a643c4d36a#24b43bae5d9748b0e7f679c6ec9f85a643c4d36a"
 dependencies = [
  "blake3",
  "rkyv",
@@ -102,39 +111,66 @@ dependencies = [
 ]
 
 [[package]]
-name = "core-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-logos.git?rev=2b9ed8fb758de951a76af35a65b4b53b9d210583#2b9ed8fb758de951a76af35a65b4b53b9d210583"
+name = "content-identity"
+version = "0.5.0"
+source = "git+https://github.com/LiGoldragon/content-identity.git?rev=896b21e17f31b66d0802bff899b4b60acea9c0f1#896b21e17f31b66d0802bff899b4b60acea9c0f1"
 dependencies = [
- "content-identity",
- "name-table",
+ "blake3",
  "rkyv",
+ "thiserror",
+]
+
+[[package]]
+name = "core-ethos"
+version = "0.26.0"
+source = "git+https://github.com/LiGoldragon/core-ethos.git?rev=db5a97a573113202e4de6c97e71b33491bd9666f#db5a97a573113202e4de6c97e71b33491bd9666f"
+dependencies = [
+ "content-identity 0.3.0",
+ "content-identity 0.5.0",
+ "name-table 0.1.0",
+ "name-table 0.3.0",
+ "nomos-types",
+ "protos",
+ "raw-discovery",
+ "rkyv",
+ "signal-sema-translator",
+ "structural-codec",
+ "thiserror",
+]
+
+[[package]]
+name = "core-logos"
+version = "0.25.0"
+source = "git+https://github.com/LiGoldragon/core-logos.git?rev=abee4036fbeb58c767ef7dc3489804e2afd5c6e1#abee4036fbeb58c767ef7dc3489804e2afd5c6e1"
+dependencies = [
+ "content-identity 0.3.0",
+ "content-identity 0.5.0",
+ "name-table 0.1.0",
+ "name-table 0.3.0",
+ "protos",
+ "raw-discovery",
+ "rkyv",
+ "signal-sema-translator",
+ "structural-codec",
  "thiserror",
 ]
 
 [[package]]
 name = "core-nomos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=cb9705de181b50053b4e634a3b9ad4798103164b#cb9705de181b50053b4e634a3b9ad4798103164b"
+version = "0.39.0"
+source = "git+https://github.com/LiGoldragon/core-nomos.git?rev=22de53fced0eff372930f5b7baec0c667f1a16d5#22de53fced0eff372930f5b7baec0c667f1a16d5"
 dependencies = [
- "content-identity",
+ "content-identity 0.3.0",
+ "content-identity 0.5.0",
+ "core-ethos",
  "core-logos",
- "core-schema",
- "name-table",
- "rkyv",
- "textual-rust",
- "thiserror",
-]
-
-[[package]]
-name = "core-schema"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/core-schema.git?rev=d3cdee9ac2c17de16a7745c9854344d8bbcde64e#d3cdee9ac2c17de16a7745c9854344d8bbcde64e"
-dependencies = [
- "content-identity",
- "name-table",
+ "name-table 0.1.0",
+ "name-table 0.3.0",
+ "protos",
  "raw-discovery",
  "rkyv",
+ "rust-logos",
+ "signal-sema-translator",
  "structural-codec",
  "thiserror",
 ]
@@ -167,19 +203,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
+name = "errno"
+version = "0.3.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
+dependencies = [
+ "libc",
+ "windows-sys",
+]
+
+[[package]]
+name = "fastrand"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
+
+[[package]]
 name = "find-msvc-tools"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
-
-[[package]]
-name = "fsevent-sys"
-version = "4.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76ee7a02da4d231650c7cea31349b889be2f45ddb3ef3032d2ec8185f6313fd2"
-dependencies = [
- "libc",
-]
 
 [[package]]
 name = "futures"
@@ -270,6 +313,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "getrandom"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "r-efi",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -289,26 +343,6 @@ checksum = "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9"
 dependencies = [
  "equivalent",
  "hashbrown",
-]
-
-[[package]]
-name = "inotify"
-version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "153be1941a183ec9ccd095ddbe17a8b8d435ef6c76e9e02451b933c3999af2c8"
-dependencies = [
- "bitflags",
- "inotify-sys",
- "libc",
-]
-
-[[package]]
-name = "inotify-sys"
-version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c033f80b2c113cdf91ab7a33faa9cbc014726dcad99880c8609af2a370edf37d"
-dependencies = [
- "libc",
 ]
 
 [[package]]
@@ -347,50 +381,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "kqueue"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "273c0752728918e0ac4976f2b275b6fefb9ecd400585dec929419f3844cd87b5"
-dependencies = [
- "kqueue-sys",
- "libc",
-]
-
-[[package]]
-name = "kqueue-sys"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07293a4e297ac234359b510362495713f75ea345d5307140414f20c69ffeb087"
-dependencies = [
- "bitflags",
- "libc",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.186"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
 
 [[package]]
-name = "log"
-version = "0.4.33"
+name = "linux-raw-sys"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
+checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "logos-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
+ "core-logos",
  "core-nomos",
  "kameo",
- "name-table",
- "notify",
+ "name-table 0.3.0",
  "rkyv",
+ "rust-logos",
  "signal-logos",
- "signal-nomos",
  "signal-sema-storage",
- "textual-rust",
+ "signal-sema-translator",
+ "structural-codec",
+ "tempfile",
  "thiserror",
  "tokio",
 ]
@@ -408,9 +424,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30d65c71f1ce40ab09135ce117d742b9f8a19ff91a41a8b57ed50bc2de59c427"
 dependencies = [
  "libc",
- "log",
  "wasi",
- "windows-sys 0.61.2",
+ "windows-sys",
 ]
 
 [[package]]
@@ -436,38 +451,29 @@ dependencies = [
 [[package]]
 name = "name-table"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/name-table.git?rev=c3237f77c087e6feab49d6cf34971cebc14a11e6#c3237f77c087e6feab49d6cf34971cebc14a11e6"
+source = "git+https://github.com/LiGoldragon/name-table.git?rev=196610e2907687dcb8dbd0d2dfaafe4aefd9fa27#196610e2907687dcb8dbd0d2dfaafe4aefd9fa27"
 dependencies = [
- "content-identity",
+ "content-identity 0.3.0",
  "rkyv",
  "thiserror",
 ]
 
 [[package]]
-name = "notify"
-version = "8.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d3d07927151ff8575b7087f245456e549fea62edf0ec4e565a5ee50c8402bc3"
+name = "name-table"
+version = "0.3.0"
+source = "git+https://github.com/LiGoldragon/name-table.git?rev=a22f48d8040ab9235f3552ad8654ff8e27b8157d#a22f48d8040ab9235f3552ad8654ff8e27b8157d"
 dependencies = [
- "bitflags",
- "fsevent-sys",
- "inotify",
- "kqueue",
- "libc",
- "log",
- "mio",
- "notify-types",
- "walkdir",
- "windows-sys 0.60.2",
+ "content-identity 0.5.0",
+ "rkyv",
+ "thiserror",
 ]
 
 [[package]]
-name = "notify-types"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42b8cfee0e339a0337359f3c88165702ac6e600dc01c0cc9579a92d62b08477a"
+name = "nomos-types"
+version = "0.1.0"
+source = "git+https://github.com/LiGoldragon/nomos-types.git?rev=a7b831e0540a8ad263cd07ed44ec4c95c56771fb#a7b831e0540a8ad263cd07ed44ec4c95c56771fb"
 dependencies = [
- "bitflags",
+ "rkyv",
 ]
 
 [[package]]
@@ -508,6 +514,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "protos"
+version = "0.5.0"
+source = "git+https://github.com/LiGoldragon/protos.git?rev=65e7c6d4692a40e1c49deffb3fb4a9a2c3555c5b#65e7c6d4692a40e1c49deffb3fb4a9a2c3555c5b"
+dependencies = [
+ "content-identity 0.5.0",
+ "rkyv",
+ "signal-frame",
+]
+
+[[package]]
 name = "ptr_meta"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -537,6 +553,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "r-efi"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
+
+[[package]]
 name = "rancor"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -547,9 +569,10 @@ dependencies = [
 
 [[package]]
 name = "raw-discovery"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/raw-discovery.git?rev=a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8#a4e8c6df84e6a487ca6fe2f3641f9bafd0b0d8c8"
+version = "0.4.0"
+source = "git+https://github.com/LiGoldragon/raw-discovery.git?rev=2d4e2e00f2821c4e2893fa96028cef0ac76e9644#2d4e2e00f2821c4e2893fa96028cef0ac76e9644"
 dependencies = [
+ "content-identity 0.3.0",
  "rkyv",
  "thiserror",
 ]
@@ -594,19 +617,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-logos"
+version = "0.29.0"
+source = "git+https://github.com/LiGoldragon/rust-logos.git?rev=250e728fa9e5a02e3c9a6d4f0cfee0683863df83#250e728fa9e5a02e3c9a6d4f0cfee0683863df83"
+dependencies = [
+ "bs58",
+ "core-logos",
+ "name-table 0.1.0",
+ "name-table 0.3.0",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "raw-discovery",
+ "rkyv",
+ "signal-sema-translator",
+ "structural-codec",
+ "syn",
+ "thiserror",
+]
+
+[[package]]
+name = "rustix"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
+dependencies = [
+ "bitflags",
+ "errno",
+ "libc",
+ "linux-raw-sys",
+ "windows-sys",
+]
+
+[[package]]
 name = "rustversion"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
-
-[[package]]
-name = "same-file"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
-dependencies = [
- "winapi-util",
-]
 
 [[package]]
 name = "serde"
@@ -646,8 +693,8 @@ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "signal-frame"
-version = "0.3.0"
-source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=f46872e7e8edae5264c892443d415a273b231234#f46872e7e8edae5264c892443d415a273b231234"
+version = "0.4.0"
+source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=0786fbe8caf27552afcdd5deb85bc82ec6088337#0786fbe8caf27552afcdd5deb85bc82ec6088337"
 dependencies = [
  "paste",
  "rkyv",
@@ -658,7 +705,7 @@ dependencies = [
 [[package]]
 name = "signal-frame-macros"
 version = "0.1.1"
-source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=f46872e7e8edae5264c892443d415a273b231234#f46872e7e8edae5264c892443d415a273b231234"
+source = "git+https://github.com/LiGoldragon/signal-frame.git?rev=0786fbe8caf27552afcdd5deb85bc82ec6088337#0786fbe8caf27552afcdd5deb85bc82ec6088337"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -667,18 +714,8 @@ dependencies = [
 
 [[package]]
 name = "signal-logos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=c248235c4adfea86b7754b7ce71b056bc90088b0#c248235c4adfea86b7754b7ce71b056bc90088b0"
-dependencies = [
- "rkyv",
- "signal-sema-storage",
- "thiserror",
-]
-
-[[package]]
-name = "signal-nomos"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-nomos.git?rev=2c09647bb08825806c1485ba11aca844d4b60fff#2c09647bb08825806c1485ba11aca844d4b60fff"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=a7eead9e278503ffb6afce1bb0768c32d5dbe176#a7eead9e278503ffb6afce1bb0768c32d5dbe176"
 dependencies = [
  "rkyv",
  "signal-sema-storage",
@@ -687,13 +724,26 @@ dependencies = [
 
 [[package]]
 name = "signal-sema-storage"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=31ab48608a3c2eab0733dcb16a3351251a70789d#31ab48608a3c2eab0733dcb16a3351251a70789d"
+version = "0.3.0"
+source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=3f64b1ff99318ac43908fab14dc30aa3b375c649#3f64b1ff99318ac43908fab14dc30aa3b375c649"
 dependencies = [
- "content-identity",
+ "content-identity 0.3.0",
  "core-logos",
- "core-schema",
- "name-table",
+ "name-table 0.1.0",
+ "rkyv",
+ "signal-frame",
+ "signal-sema-translator",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-sema-translator"
+version = "0.4.0"
+source = "git+https://github.com/LiGoldragon/signal-sema-translator.git?rev=3a26cb43f8ce7f9fe85da64d19aa55aa662943ce#3a26cb43f8ce7f9fe85da64d19aa55aa662943ce"
+dependencies = [
+ "blake3",
+ "name-table 0.3.0",
+ "protos",
  "rkyv",
  "signal-frame",
  "thiserror",
@@ -718,16 +768,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys",
 ]
 
 [[package]]
 name = "structural-codec"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/structural-codec.git?rev=104f92454a5ba88b376fa706a9fe38c4a4b65ee0#104f92454a5ba88b376fa706a9fe38c4a4b65ee0"
+version = "0.19.0"
+source = "git+https://github.com/LiGoldragon/structural-codec.git?rev=413e3744569ca237e837a1fd57d9ba6ad6adc3de#413e3744569ca237e837a1fd57d9ba6ad6adc3de"
 dependencies = [
- "content-identity",
- "name-table",
+ "content-identity 0.3.0",
+ "name-table 0.3.0",
  "raw-discovery",
  "rkyv",
  "thiserror",
@@ -745,18 +795,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "textual-rust"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/textual-rust.git?rev=ee7859ff10b0710fab9e87672c66d8c889b67c63#ee7859ff10b0710fab9e87672c66d8c889b67c63"
+name = "tempfile"
+version = "3.27.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
- "content-identity",
- "core-logos",
- "name-table",
- "prettyplease",
- "proc-macro2",
- "quote",
- "syn",
- "thiserror",
+ "fastrand",
+ "getrandom",
+ "once_cell",
+ "rustix",
+ "windows-sys",
 ]
 
 [[package]]
@@ -806,7 +854,7 @@ dependencies = [
  "pin-project-lite",
  "socket2",
  "tokio-macros",
- "windows-sys 0.61.2",
+ "windows-sys",
 ]
 
 [[package]]
@@ -834,16 +882,6 @@ checksum = "bf3923a6f5c4c6382e0b653c4117f48d631ea17f38ed86e2a828e6f7412f5239"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "walkdir"
-version = "2.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b"
-dependencies = [
- "same-file",
- "winapi-util",
 ]
 
 [[package]]
@@ -898,28 +936,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "winapi-util"
-version = "0.1.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
-dependencies = [
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "windows-link"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5"
-
-[[package]]
-name = "windows-sys"
-version = "0.60.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2f500e4d28234f72040990ec9d39e3a6b950f9f22d3dba18416c35882612bcb"
-dependencies = [
- "windows-targets",
-]
 
 [[package]]
 name = "windows-sys"
@@ -929,68 +949,3 @@ checksum = "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc"
 dependencies = [
  "windows-link",
 ]
-
-[[package]]
-name = "windows-targets"
-version = "0.53.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4945f9f551b88e0d65f3db0bc25c33b8acea4d9e41163edf90dcd0b19f9069f3"
-dependencies = [
- "windows-link",
- "windows_aarch64_gnullvm",
- "windows_aarch64_msvc",
- "windows_i686_gnu",
- "windows_i686_gnullvm",
- "windows_i686_msvc",
- "windows_x86_64_gnu",
- "windows_x86_64_gnullvm",
- "windows_x86_64_msvc",
-]
-
-[[package]]
-name = "windows_aarch64_gnullvm"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9d8416fa8b42f5c947f8482c43e7d89e73a173cead56d044f6a56104a6d1b53"
-
-[[package]]
-name = "windows_aarch64_msvc"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9d782e804c2f632e395708e99a94275910eb9100b2114651e04744e9b125006"
-
-[[package]]
-name = "windows_i686_gnu"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "960e6da069d81e09becb0ca57a65220ddff016ff2d6af6a223cf372a506593a3"
-
-[[package]]
-name = "windows_i686_gnullvm"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa7359d10048f68ab8b09fa71c3daccfb0e9b559aed648a8f95469c27057180c"
-
-[[package]]
-name = "windows_i686_msvc"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e7ac75179f18232fe9c285163565a57ef8d3c89254a30685b57d83a38d326c2"
-
-[[package]]
-name = "windows_x86_64_gnu"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c3842cdd74a865a8066ab39c8a7a473c0778a3f29370b5fd6b4b9aa7df4a499"
-
-[[package]]
-name = "windows_x86_64_gnullvm"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ffa179e2d07eee8ad8f57493436566c7cc30ac536a3379fdf008f47f6bb7ae1"
-
-[[package]]
-name = "windows_x86_64_msvc"
-version = "0.53.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6bbff5f0aada427a1e5a6da5f1f98158182f26556f345ac9e04d36d0ebed650"

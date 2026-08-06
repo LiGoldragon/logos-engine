@@ -1,21 +1,28 @@
 # logos-engine architecture
 
-A real daemon and thin CLI. In the currently wired legacy topology,
-Signal → Nexus → SEMA Kameo actors fetch CoreLogos through the central socket
-and project it through the real TextualRust codec. The producer closure uses
-one full exact CoreLogos revision, so projection consumes the stored typed
-item directly.
+`logos-engine` is a real daemon and thin CLI. In the currently wired legacy topology, its Signal → Nexus → SEMA actor path fetches a Logos document through the central socket. The approved target remains a stateful Logos daemon whose own embedded sema database stores its state; the separate translator daemon owns only shared naming and encoded-ID allocation. This migration does not extend or present the central store as the target architecture.
 
-The approved target is a stateful Logos daemon whose own embedded sema
-database stores its state. A separate small translator daemon owns only shared
-naming and encodedID allocation. The current socket path remains in place
-until a separately designed storage migration lands; it is not the target
-storage contract.
+## Stored truth and projection
 
-## The generated-module head
+The live storage arm is no longer a list of legacy items. It carries two private canonical archives:
 
-A projected module opens with the fixed head — the `// @generated` marker, the four scalar type aliases, and the cfg-gated NOTA import — which is a property of the module shape, not of any Ethos. That head is Nomos's fixed prelude package (`core_nomos::ModuleHead`); the engine prepends `ModuleHead::render()` ahead of the document's declaration items. The prelude is rendered inside `core-nomos` through the same prettyplease projection and handed here as a plain `String`, so no typed CoreLogos value crosses the boundary.
+- `WholeLogosArchive`, restored only through `WholeLogos::from_archive_bytes`, including encoded-ID and nonempty-product validation;
+- `VocabularyNameTableArchive`, restored only through the production nested name-table archive boundary.
 
-That String seam is now pure output assembly, not a version bridge. It was once a recorded coexistence lean: `core-nomos`'s prelude items used the new CoreLogos revision (the `Use` item kind and the `Cfg` attribute) while the logos documents this engine decodes stayed on the older CoreLogos revision `signal-sema-storage` pinned, and the two revisions coexisted in the lock only because the prelude crossed as text — the declaration-decode path never met the prelude's revision. That coexistence has collapsed. `signal-sema-storage`, `core-nomos`, and `textual-rust` now all pin the single CoreLogos revision `4edf5de9`, so the stored `DocumentPayload::Logos` items and `textual-rust`'s `project_item` are the same typed `core_logos::CoreItem`, and the whole lock carries one core-logos (`4edf5de9`) and one core-schema (`72d1c98`, the layout-3 DeclarationRole front end).
+The engine crosses both checked boundaries before projection. It never reconstructs `WholeLogos` from legacy `EncodedItem` values, reads flat name-table bytes, or translates between identity schemes.
 
-This bump crossed the CoreLogos layout-2 boundary: layout 2 re-serializes every `CoreItem` under rkyv's fixed-size enum layout, moving the content identity of stored logos documents; a host survey found no durable store holds old-layout hashes, so the crossing needed no data migration. The prelude still renders to a `String` because `core-nomos` owns the fixed module-head package and this engine assembles Rust text — the rendered head string followed by the projected-item strings. With the revisions unified that is simply the natural output form, not a workaround; keeping it is deliberate, and retiring it would re-plumb the prelude as typed items projected here for no correctness gain now that every revision agrees.
+Rust emission is owned by current `rust-logos::RustLogos`. The stored authority table supplies the exact Rust-root allocations for the five structural record identities and the five fixed Rust tokens required to seal the emitter. Missing allocations are refused; the engine does not mint them or substitute spellings. Production emission derives Universal declaration tokens from their complete encoded-ID chains and resolves immutable Rust-root references through the restored authority table. Thus an operational rename cannot move a Universal emitted identity, while a Rust vocabulary reference remains authority-resolved.
+
+## Generated-module head
+
+Every generated module still opens with Nomos's fixed module head: the generated marker, scalar aliases, and cfg-gated NOTA import. `core_nomos::ModuleHead` owns and renders that fixed package, and the engine prepends the returned string to the one complete `RustLogos::emit` result. This string seam is output assembly, not an archive or version bridge; the stored body remains a single typed `WholeLogos` value throughout.
+
+## Retired legacy Nomos relay
+
+The former CLI accepted a Nomos socket and drove projection from `signal-nomos::Subscribe/Event`. That operation pair no longer exists in the current stateful Nomos contract. Its replacement `Transform` returns a checked but opaque native `LogosPopulationArchive`, not a central-storage `ContentHash`; treating those bytes as a stored Logos document would invent archive meaning. The relay and filesystem socket watcher are therefore removed, and the typed CLI daemon surface is now `daemon [socket] [sema-socket]`. Direct `ProjectRust`, `List`, and Logos `Subscribe` behavior remains. Automatic cross-daemon projection can return only through a separately designed stateful event/archive boundary.
+
+## Exact train
+
+The normal graph pins the published current owners it actually uses: `signal-sema-storage` 0.3.0, `signal-logos` 0.2.0, `core-nomos` 0.39.0, `core-logos` 0.25.0, and `rust-logos` 0.29.0. The current storage, whole-Logos, nested naming, translator, and Rust projection owners each resolve to one revision. `signal-nomos` is deliberately absent because this engine implements no current Nomos operation; keeping an unused compatibility pin would claim ownership the engine does not have. Older name-table/content-identity crates remain only where the current producers deliberately retain their legacy internal surfaces; no obsolete aggregate-Protos or core-schema archive owner participates in the engine's live Logos path.
+
+This is the archive-truth migration required by `primary-e68.4`. It does not begin the separately staged identity car: no content identity is minted, inferred, rebound, or converted here.

@@ -1,16 +1,15 @@
 use std::{env, path::PathBuf};
 
 use logos_engine::Runtime;
-use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use signal_logos::{Reply, Request, encode_reply, encode_request};
 use signal_sema_storage::{ContentHash, FixtureScope, FrameMessage, Wire};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{UnixListener, UnixStream},
-    sync::mpsc,
 };
 
 type AnyError = Box<dyn std::error::Error + Send + Sync>;
+const USAGE: &str = "usage: logos-engine daemon [socket] [sema-socket] | project <socket> <hash> | subscribe <socket>";
 
 struct FramedSocket {
     stream: UnixStream,
@@ -69,101 +68,57 @@ impl FramedSocket {
     }
 }
 
-struct SocketReadiness {
-    path: PathBuf,
-}
-impl SocketReadiness {
-    fn new(path: PathBuf) -> Self {
-        Self { path }
-    }
-    async fn changed(&self) -> Result<(), AnyError> {
-        let parent = self
-            .path
-            .parent()
-            .ok_or("upstream socket has no parent")?
-            .to_path_buf();
-        let (sender, mut receiver) = mpsc::unbounded_channel();
-        let mut watcher: RecommendedWatcher = notify::recommended_watcher(move |event| {
-            let _ = sender.send(event);
-        })?;
-        watcher.watch(&parent, RecursiveMode::NonRecursive)?;
-        while let Some(event) = receiver.recv().await {
-            let event = event?;
-            if event.paths.iter().any(|path| path == &self.path) {
-                return Ok(());
-            }
-        }
-        Err("upstream readiness watcher closed".into())
-    }
-}
-
 #[tokio::main]
 async fn main() -> Result<(), AnyError> {
     let mut arguments = env::args().skip(1);
     match arguments.next().as_deref() {
         Some("daemon") => {
-            let socket = PathBuf::from(arguments.next().unwrap_or_else(|| "/tmp/new-language-engine/logos.sock".into()));
-            let sema = PathBuf::from(arguments.next().unwrap_or_else(|| "/tmp/new-language-engine/sema.sock".into()));
-            let nomos = PathBuf::from(arguments.next().unwrap_or_else(|| "/tmp/new-language-engine/nomos.sock".into()));
-            if let Some(parent) = socket.parent() { std::fs::create_dir_all(parent)?; }
+            let socket = PathBuf::from(
+                arguments
+                    .next()
+                    .unwrap_or_else(|| "/tmp/new-language-engine/logos.sock".into()),
+            );
+            let sema = PathBuf::from(
+                arguments
+                    .next()
+                    .unwrap_or_else(|| "/tmp/new-language-engine/sema.sock".into()),
+            );
+            if let Some(parent) = socket.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
             let _ = std::fs::remove_file(&socket);
             let listener = UnixListener::bind(&socket)?;
             let runtime = Runtime::new(sema);
-            let relay_runtime = runtime.clone();
-            tokio::spawn(async move { Relay::supervise(nomos, relay_runtime).await; });
             println!("READY {}", socket.display());
             loop {
                 let (stream, _) = listener.accept().await?;
                 let runtime = runtime.clone();
-                tokio::spawn(async move { let _ = Server::serve(stream, runtime).await; });
+                tokio::spawn(async move {
+                    let _ = Server::serve(stream, runtime).await;
+                });
             }
         }
         Some("project") => {
             let socket = PathBuf::from(arguments.next().ok_or("socket")?);
             let hash = ContentHash(Parser::hash(&arguments.next().ok_or("logos hash")?)?);
-            println!("{:?}", Client::exchange(&socket, &Request::ProjectRust { scope: FixtureScope(1), logos: hash }).await?);
+            println!(
+                "{:?}",
+                Client::exchange(
+                    &socket,
+                    &Request::ProjectRust {
+                        scope: FixtureScope(1),
+                        logos: hash
+                    }
+                )
+                .await?
+            );
             Ok(())
         }
         Some("subscribe") => {
             let socket = PathBuf::from(arguments.next().ok_or("socket")?);
             Client::subscribe(&socket).await
         }
-        _ => Err("usage: logos-engine daemon [socket] [sema-socket] [nomos-socket] | project <socket> <hash> | subscribe <socket>".into()),
-    }
-}
-
-struct Relay;
-impl Relay {
-    async fn supervise(nomos: PathBuf, runtime: Runtime) {
-        loop {
-            let _ = Self::connection(&nomos, &runtime).await;
-            if SocketReadiness::new(nomos.clone()).changed().await.is_err() {
-                return;
-            }
-        }
-    }
-    async fn connection(nomos: &PathBuf, runtime: &Runtime) -> Result<(), AnyError> {
-        let mut socket = FramedSocket::connect(nomos).await?;
-        socket
-            .request(signal_nomos::encode_request(
-                &signal_nomos::Request::Subscribe {
-                    scope: FixtureScope(1),
-                },
-            )?)
-            .await?;
-        let _: signal_nomos::Reply = Decoder::value(&socket.reply_payload().await?)?;
-        loop {
-            if let signal_nomos::Reply::Event(event) =
-                Decoder::value::<signal_nomos::Reply>(&socket.reply_payload().await?)?
-            {
-                runtime
-                    .request(Request::ProjectRust {
-                        scope: event.logos.key.scope,
-                        logos: event.logos.hash,
-                    })
-                    .await?;
-            }
-        }
+        _ => Err(USAGE.into()),
     }
 }
 
@@ -248,5 +203,18 @@ impl Parser {
             output[index] = u8::from_str_radix(std::str::from_utf8(pair)?, 16)?;
         }
         Ok(output)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::USAGE;
+
+    #[test]
+    fn daemon_surface_names_only_its_store_socket() {
+        assert_eq!(
+            USAGE,
+            "usage: logos-engine daemon [socket] [sema-socket] | project <socket> <hash> | subscribe <socket>"
+        );
     }
 }

@@ -5,13 +5,16 @@ use kameo::{
     actor::{ActorRef, Spawn},
     message::{Context, Message},
 };
-use name_table::NameTable;
+use name_table::{Name, TableAddress};
+use rust_logos::{FixtureRustVocabulary, FixtureRustVocabularyIds, RustLogos};
 use signal_logos::{ProjectionEvent, Rejection, Reply, Request};
 use signal_sema_storage::{
-    DocumentKind, DocumentPayload, FrameMessage, Reply as SemaReply, Request as SemaRequest,
-    SubscriptionIdentifier, Wire,
+    CodecError as StorageCodecError, DocumentKind, DocumentPayload, FrameMessage,
+    Reply as SemaReply, Request as SemaRequest, SubscriptionIdentifier, VocabularyNameTableArchive,
+    WholeLogosArchive, Wire,
 };
-use textual_rust::RustSource;
+use signal_sema_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
+use structural_codec::EncodedNameResolver;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::UnixStream,
@@ -24,10 +27,72 @@ pub enum Error {
     Io(#[from] std::io::Error),
     #[error("projection: {0}")]
     Projection(String),
+    #[error("stored Logos archive: {0}")]
+    StoredArchive(#[from] StorageCodecError),
+    #[error("Rust Logos projection: {0}")]
+    RustLogos(#[from] rust_logos::Error),
+    #[error("Nomos module head: {0}")]
+    ModuleHead(#[from] core_nomos::NomosError),
+    #[error("vocabulary authority: {0}")]
+    VocabularyAuthority(String),
+    #[error("Rust vocabulary is missing authority allocation for {0}")]
+    MissingRustVocabulary(&'static str),
     #[error("actor: {0}")]
     Actor(String),
 }
 type Result<T> = std::result::Result<T, Error>;
+
+struct AuthorityNames<'names> {
+    names: &'names VocabularyNameTable,
+}
+
+impl EncodedNameResolver<VocabularyRoot> for AuthorityNames<'_> {
+    fn resolve(&self, encoded_id: &VocabularyEncodedId) -> Option<&Name> {
+        self.names.resolve(encoded_id).ok()
+    }
+}
+
+fn required_rust_vocabulary_id(
+    names: &VocabularyNameTable,
+    spelling: &'static str,
+) -> Result<VocabularyEncodedId> {
+    names
+        .lookup(
+            &TableAddress::root(VocabularyRoot::Rust),
+            &Name::new(spelling),
+        )
+        .map_err(|error| Error::VocabularyAuthority(error.to_string()))?
+        .ok_or(Error::MissingRustVocabulary(spelling))
+}
+
+fn rust_logos(names: &VocabularyNameTable) -> Result<RustLogos> {
+    let ids = FixtureRustVocabularyIds::new(
+        required_rust_vocabulary_id(names, "NewtypeItemRecord")?,
+        required_rust_vocabulary_id(names, "EnumerationItemRecord")?,
+        required_rust_vocabulary_id(names, "VariantRecord")?,
+        required_rust_vocabulary_id(names, "TupleFieldRecord")?,
+        required_rust_vocabulary_id(names, "TypeReferenceRecord")?,
+        required_rust_vocabulary_id(names, "struct")?,
+        required_rust_vocabulary_id(names, "enum")?,
+        required_rust_vocabulary_id(names, "pub")?,
+        required_rust_vocabulary_id(names, ",")?,
+        required_rust_vocabulary_id(names, ";")?,
+    );
+    let resolver = AuthorityNames { names };
+    Ok(RustLogos::new(FixtureRustVocabulary::seal(ids, &resolver)?))
+}
+
+fn project_archived_logos(
+    logos: WholeLogosArchive,
+    names: VocabularyNameTableArchive,
+) -> Result<String> {
+    let logos = logos.to_logos()?;
+    let names = names.to_name_table()?;
+    let resolver = AuthorityNames { names: &names };
+    let mut rust = core_nomos::ModuleHead::fixed()?.render()?;
+    rust.push_str(&rust_logos(&names)?.emit(&logos, &resolver)?);
+    Ok(rust)
+}
 
 pub struct SemaPlane {
     socket: PathBuf,
@@ -133,26 +198,18 @@ impl Message<Dispatch> for NexusPlane {
                     version: document.version,
                     hash: document.hash,
                 };
-                let DocumentPayload::Logos { items, names } = document.payload else {
+                let DocumentPayload::Logos {
+                    logos: archived_logos,
+                    names,
+                } = document.payload
+                else {
                     return Ok(Reply::Rejected(Rejection::WrongDocumentKind));
                 };
-                let names = NameTable::from_archive_bytes(&names.0)
-                    .map_err(|error| Error::Projection(error.to_string()))?;
                 // The generated module opens with the fixed head — the `// @generated`
                 // marker, the four scalar aliases, and the cfg-gated NOTA import —
                 // rendered from Nomos's fixed prelude package through the same
                 // prettyplease projection, ahead of the document's declarations.
-                let mut rust = core_nomos::ModuleHead::fixed()
-                    .render()
-                    .map_err(|error| Error::Projection(error.to_string()))?;
-                for item in items {
-                    rust.push_str(
-                        RustSource::project_item(&item, &names)
-                            .map_err(|error| Error::Projection(error.to_string()))?
-                            .as_str(),
-                    );
-                    rust.push('\n');
-                }
+                let rust = project_archived_logos(archived_logos, names)?;
                 let _ = self.events.send(ProjectionEvent {
                     logos,
                     rust: rust.clone(),
@@ -258,5 +315,161 @@ impl Runtime {
     }
     pub fn subscribe(&self) -> broadcast::Receiver<ProjectionEvent> {
         self.events.subscribe()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{fs, process::Command};
+
+    use core_logos::{
+        WholeLogos, WholeLogosEnumeration, WholeLogosItem, WholeLogosTupleFields,
+        WholeLogosTypeReference, WholeLogosVariant, WholeLogosVariantPayload, WholeLogosVisibility,
+    };
+    use name_table::{
+        Declaration, Name, OperationKey, RootDeclaration, SealRequest, TableAddress,
+        TableMutability,
+    };
+    use signal_sema_storage::{VocabularyNameTableArchive, WholeLogosArchive};
+    use signal_sema_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
+
+    use super::{Error, project_archived_logos};
+
+    const RUST_VOCABULARY: &[&str] = &[
+        "NewtypeItemRecord",
+        "EnumerationItemRecord",
+        "VariantRecord",
+        "TupleFieldRecord",
+        "TypeReferenceRecord",
+        "struct",
+        "enum",
+        "pub",
+        ",",
+        ";",
+        "u64",
+    ];
+
+    fn authority_names(complete_rust_vocabulary: bool) -> VocabularyNameTable {
+        let rust_names = if complete_rust_vocabulary {
+            RUST_VOCABULARY
+        } else {
+            &["u64"]
+        };
+        let mut names = VocabularyNameTable::new();
+        names
+            .seal(SealRequest::new(
+                OperationKey::new([7; 32]),
+                vec![
+                    RootDeclaration::new(
+                        VocabularyRoot::Universal,
+                        TableMutability::Mutable,
+                        ["Choice", "Unit", "Unary", "Product"]
+                            .into_iter()
+                            .map(|spelling| Declaration::Member(Name::new(spelling)))
+                            .collect(),
+                    ),
+                    RootDeclaration::new(
+                        VocabularyRoot::Rust,
+                        TableMutability::Immutable,
+                        rust_names
+                            .iter()
+                            .map(|spelling| Declaration::Member(Name::new(*spelling)))
+                            .collect(),
+                    ),
+                ],
+                Vec::new(),
+            ))
+            .expect("seal authority vocabulary");
+        names
+    }
+
+    fn identity(
+        names: &VocabularyNameTable,
+        root: VocabularyRoot,
+        spelling: &str,
+    ) -> VocabularyEncodedId {
+        names
+            .lookup(&TableAddress::root(root), &Name::new(spelling))
+            .expect("lookup authority name")
+            .expect("authority name exists")
+    }
+
+    fn product_logos(names: &VocabularyNameTable) -> WholeLogos {
+        let integer =
+            WholeLogosTypeReference::Identity(identity(names, VocabularyRoot::Rust, "u64"));
+        WholeLogos::new(vec![WholeLogosItem::Enumeration(
+            WholeLogosEnumeration::new(
+                WholeLogosVisibility::Public,
+                identity(names, VocabularyRoot::Universal, "Choice"),
+                vec![
+                    WholeLogosVariant::new(
+                        identity(names, VocabularyRoot::Universal, "Unit"),
+                        WholeLogosVariantPayload::Unit,
+                    ),
+                    WholeLogosVariant::new(
+                        identity(names, VocabularyRoot::Universal, "Unary"),
+                        WholeLogosVariantPayload::Tuple(
+                            WholeLogosTupleFields::new(vec![integer.clone()])
+                                .expect("unary variant"),
+                        ),
+                    ),
+                    WholeLogosVariant::new(
+                        identity(names, VocabularyRoot::Universal, "Product"),
+                        WholeLogosVariantPayload::Tuple(
+                            WholeLogosTupleFields::new(vec![integer.clone(), integer])
+                                .expect("product variant"),
+                        ),
+                    ),
+                ],
+            ),
+        )])
+    }
+
+    #[test]
+    fn validated_archives_project_through_authority_vocabulary_and_compile() {
+        let names = authority_names(true);
+        let logos = product_logos(&names);
+        let rust = project_archived_logos(
+            WholeLogosArchive::from_logos(&logos).expect("archive WholeLogos"),
+            VocabularyNameTableArchive::from_name_table(&names)
+                .expect("archive authority vocabulary"),
+        )
+        .expect("project stored WholeLogos");
+
+        assert!(rust.starts_with(core_nomos::GENERATED_MARKER));
+        assert!(rust.contains("u64"), "{rust}");
+        for human_spelling in ["Choice", "Unit", "Unary", "Product"] {
+            assert!(!rust.contains(human_spelling), "{rust}");
+        }
+
+        let directory = tempfile::tempdir().expect("temporary compile directory");
+        let source = directory.path().join("lib.rs");
+        fs::write(&source, format!("#![allow(non_camel_case_types)]\n{rust}"))
+            .expect("write generated Rust");
+        let status = Command::new("rustc")
+            .arg("--edition=2024")
+            .arg("--crate-type=lib")
+            .arg("--out-dir")
+            .arg(directory.path())
+            .arg(source)
+            .status()
+            .expect("run rustc");
+        assert!(status.success(), "projected Rust must compile");
+    }
+
+    #[test]
+    fn projection_refuses_missing_authority_rust_vocabulary() {
+        let names = authority_names(false);
+        let error = project_archived_logos(
+            WholeLogosArchive::from_logos(&WholeLogos::new(Vec::new()))
+                .expect("archive empty WholeLogos"),
+            VocabularyNameTableArchive::from_name_table(&names)
+                .expect("archive incomplete authority vocabulary"),
+        )
+        .expect_err("missing structural vocabulary must be refused");
+        assert!(matches!(
+            error,
+            Error::MissingRustVocabulary("NewtypeItemRecord")
+        ));
     }
 }

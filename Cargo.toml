@@ -1,22 +1,25 @@
 [package]
 name="logos-engine"
-version="0.1.0"
+version="0.2.0"
 edition="2024"
 rust-version="1.89"
 license="MIT OR Apache-2.0"
 repository="https://github.com/LiGoldragon/logos-engine"
 description="CoreLogos Rust projection daemon and thin CLI"
 [dependencies]
-core-nomos={git="https://github.com/LiGoldragon/core-nomos.git",rev="cb9705de181b50053b4e634a3b9ad4798103164b"}
+core-logos={git="https://github.com/LiGoldragon/core-logos.git",rev="abee4036fbeb58c767ef7dc3489804e2afd5c6e1"}
+core-nomos={git="https://github.com/LiGoldragon/core-nomos.git",rev="22de53fced0eff372930f5b7baec0c667f1a16d5"}
 kameo={git="https://github.com/LiGoldragon/kameo.git",rev="f491b45d7dcb55e5837eddde3d5d7ca8ceaa9f01",default-features=false,features=["macros"]}
-name-table={git="https://github.com/LiGoldragon/name-table.git",rev="c3237f77c087e6feab49d6cf34971cebc14a11e6"}
-notify="8"
+name-table={git="https://github.com/LiGoldragon/name-table.git",rev="a22f48d8040ab9235f3552ad8654ff8e27b8157d"}
 rkyv={version="0.8",features=["bytecheck"]}
-signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="c248235c4adfea86b7754b7ce71b056bc90088b0"}
-signal-nomos={git="https://github.com/LiGoldragon/signal-nomos.git",rev="2c09647bb08825806c1485ba11aca844d4b60fff"}
-signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="31ab48608a3c2eab0733dcb16a3351251a70789d"}
-textual-rust={git="https://github.com/LiGoldragon/textual-rust.git",rev="ee7859ff10b0710fab9e87672c66d8c889b67c63"}
+rust-logos={git="https://github.com/LiGoldragon/rust-logos.git",rev="250e728fa9e5a02e3c9a6d4f0cfee0683863df83"}
+signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="a7eead9e278503ffb6afce1bb0768c32d5dbe176"}
+signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="3f64b1ff99318ac43908fab14dc30aa3b375c649"}
+signal-sema-translator={git="https://github.com/LiGoldragon/signal-sema-translator.git",rev="3a26cb43f8ce7f9fe85da64d19aa55aa662943ce"}
+structural-codec={git="https://github.com/LiGoldragon/structural-codec.git",rev="413e3744569ca237e837a1fd57d9ba6ad6adc3de"}
 tokio={version="1",features=["macros","rt-multi-thread","net","io-util","sync","time"]}
 thiserror="2"
+[dev-dependencies]
+tempfile="3"
 [lints.rust]
 unsafe_code="forbid"
