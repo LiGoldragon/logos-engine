@@ -10,10 +10,10 @@ use rust_logos::{FixtureRustVocabulary, FixtureRustVocabularyIds, RustLogos};
 use signal_logos::{ProjectionEvent, Rejection, Reply, Request};
 use signal_memory_storage::{
     CodecError as StorageCodecError, DocumentKind, DocumentPayload, FrameMessage,
-    Reply as SemaReply, Request as SemaRequest, SubscriptionIdentifier, VocabularyNameTableArchive,
+    Reply as MemoryReply, Request as MemoryRequest, SubscriptionIdentifier, VocabularyNameTableArchive,
     WholeLogosArchive, Wire,
 };
-use signal_sema_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
+use signal_memory_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
 use structural_codec::EncodedNameResolver;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
@@ -94,11 +94,11 @@ fn project_archived_logos(
     Ok(rust)
 }
 
-pub struct SemaPlane {
+pub struct MemoryPlane {
     socket: PathBuf,
     reads: u64,
 }
-impl SemaPlane {
+impl MemoryPlane {
     async fn read_frame(&self, stream: &mut UnixStream) -> Result<Vec<u8>> {
         let length = stream.read_u32().await? as usize;
         let mut frame = Vec::with_capacity(length + 4);
@@ -108,7 +108,7 @@ impl SemaPlane {
         Ok(frame)
     }
 
-    async fn exchange(&self, request: &SemaRequest) -> Result<SemaReply> {
+    async fn exchange(&self, request: &MemoryRequest) -> Result<MemoryReply> {
         let mut stream = UnixStream::connect(&self.socket).await?;
         stream
             .write_all(
@@ -119,7 +119,7 @@ impl SemaPlane {
         let handshake = Wire::decode_frame(&self.read_frame(&mut stream).await?)
             .map_err(|error| Error::Projection(error.to_string()))?;
         if !handshake.is_accepted_handshake() {
-            return Err(Error::Projection("Sema rejected frame protocol".into()));
+            return Err(Error::Projection("Memory rejected frame protocol".into()));
         }
         let payload =
             Wire::encode_request(request).map_err(|error| Error::Projection(error.to_string()))?;
@@ -133,13 +133,13 @@ impl SemaPlane {
             Wire::decode_frame(&self.read_frame(&mut stream).await?)
                 .map_err(|error| Error::Projection(error.to_string()))?
         else {
-            return Err(Error::Projection("Sema returned a non-reply frame".into()));
+            return Err(Error::Projection("Memory returned a non-reply frame".into()));
         };
-        rkyv::from_bytes::<SemaReply, rkyv::rancor::Error>(&payload)
+        rkyv::from_bytes::<MemoryReply, rkyv::rancor::Error>(&payload)
             .map_err(|error| Error::Projection(error.to_string()))
     }
 }
-impl Actor for SemaPlane {
+impl Actor for MemoryPlane {
     type Args = Self;
     type Error = Infallible;
     async fn on_start(
@@ -149,9 +149,9 @@ impl Actor for SemaPlane {
         Ok(actor)
     }
 }
-pub struct Fetch(pub SemaRequest);
-impl Message<Fetch> for SemaPlane {
-    type Reply = Result<SemaReply>;
+pub struct Fetch(pub MemoryRequest);
+impl Message<Fetch> for MemoryPlane {
+    type Reply = Result<MemoryReply>;
     async fn handle(&mut self, message: Fetch, _: &mut Context<Self, Self::Reply>) -> Self::Reply {
         self.reads += 1;
         self.exchange(&message.0).await
@@ -159,7 +159,7 @@ impl Message<Fetch> for SemaPlane {
 }
 
 pub struct NexusPlane {
-    sema: ActorRef<SemaPlane>,
+    memory: ActorRef<MemoryPlane>,
     events: broadcast::Sender<ProjectionEvent>,
     projected: u64,
 }
@@ -185,12 +185,12 @@ impl Message<Dispatch> for NexusPlane {
             Request::ProjectRust { scope: _, logos } => {
                 self.projected += 1;
                 let fetched = self
-                    .sema
-                    .ask(Fetch(SemaRequest::HashFetch { hash: logos }))
+                    .memory
+                    .ask(Fetch(MemoryRequest::HashFetch { hash: logos }))
                     .send()
                     .await
                     .map_err(|error| Error::Actor(error.to_string()))?;
-                let SemaReply::Document(Some(document)) = fetched else {
+                let MemoryReply::Document(Some(document)) = fetched else {
                     return Ok(Reply::Rejected(Rejection::LogosNotFound));
                 };
                 let summary = signal_memory_storage::SlotSummary {
@@ -222,8 +222,8 @@ impl Message<Dispatch> for NexusPlane {
             }
             Request::List { scope } => {
                 let reply = self
-                    .sema
-                    .ask(Fetch(SemaRequest::List {
+                    .memory
+                    .ask(Fetch(MemoryRequest::List {
                         scope,
                         kind: Some(DocumentKind::Logos),
                     }))
@@ -231,14 +231,14 @@ impl Message<Dispatch> for NexusPlane {
                     .await
                     .map_err(|error| Error::Actor(error.to_string()))?;
                 Ok(match reply {
-                    SemaReply::Listed(values) => Reply::Listed(values),
+                    MemoryReply::Listed(values) => Reply::Listed(values),
                     _ => Reply::Rejected(Rejection::StorageFailed),
                 })
             }
             Request::Subscribe { scope } => {
                 let reply = self
-                    .sema
-                    .ask(Fetch(SemaRequest::List {
+                    .memory
+                    .ask(Fetch(MemoryRequest::List {
                         scope,
                         kind: Some(DocumentKind::Logos),
                     }))
@@ -246,7 +246,7 @@ impl Message<Dispatch> for NexusPlane {
                     .await
                     .map_err(|error| Error::Actor(error.to_string()))?;
                 Ok(match reply {
-                    SemaReply::Listed(initial) => Reply::Subscribed {
+                    MemoryReply::Listed(initial) => Reply::Subscribed {
                         identifier: SubscriptionIdentifier(0),
                         initial,
                     },
@@ -294,10 +294,10 @@ pub struct Runtime {
 }
 impl Runtime {
     pub fn new(socket: PathBuf) -> Self {
-        let sema = SemaPlane::spawn(SemaPlane { socket, reads: 0 });
+        let memory = MemoryPlane::spawn(MemoryPlane { socket, reads: 0 });
         let (events, _) = broadcast::channel(64);
         let nexus = NexusPlane::spawn(NexusPlane {
-            sema,
+            memory,
             events: events.clone(),
             projected: 0,
         });
@@ -331,7 +331,7 @@ mod tests {
         TableMutability,
     };
     use signal_memory_storage::{VocabularyNameTableArchive, WholeLogosArchive};
-    use signal_sema_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
+    use signal_memory_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
 
     use super::{Error, project_archived_logos};
 

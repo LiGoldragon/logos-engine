@@ -1,6 +1,6 @@
 # logos-engine architecture
 
-`logos-engine` is a real daemon and thin CLI. In the currently wired legacy topology, its Signal → Nexus → SEMA actor path fetches a Logos document through the central socket. The approved target remains a stateful Logos daemon whose own embedded memory database stores its state; the separate translator daemon owns only shared naming and encoded-ID allocation. This migration does not extend or present the central store as the target architecture.
+`logos-engine` is a real daemon and thin CLI. In the currently wired legacy topology, its Signal → Nexus → MEMORY actor path fetches a Logos document through the central socket. The approved target remains a stateful Logos daemon whose own embedded memory database stores its state; the separate translator daemon owns only shared naming and encoded-ID allocation. This migration does not extend or present the central store as the target architecture.
 
 ## Stored truth and projection
 
@@ -19,7 +19,7 @@ Every generated module still opens with Nomos's fixed module head: the generated
 
 ## Retired legacy Nomos relay
 
-The former CLI accepted a Nomos socket and drove projection from `signal-nomos::Subscribe/Event`. That operation pair no longer exists in the current stateful Nomos contract. Its replacement `Transform` returns a checked but opaque native `LogosPopulationArchive`, not a central-storage `ContentHash`; treating those bytes as a stored Logos document would invent archive meaning. The relay and filesystem socket watcher are therefore removed, and the typed CLI daemon surface is now `daemon [socket] [sema-socket]`. Direct `ProjectRust`, `List`, and Logos `Subscribe` behavior remains. Automatic cross-daemon projection can return only through a separately designed stateful event/archive boundary.
+The former CLI accepted a Nomos socket and drove projection from `signal-nomos::Subscribe/Event`. That operation pair no longer exists in the current stateful Nomos contract. Its replacement `Transform` returns a checked but opaque native `LogosPopulationArchive`, not a central-storage `ContentHash`; treating those bytes as a stored Logos document would invent archive meaning. The relay and filesystem socket watcher are therefore removed, and the typed CLI daemon surface is now `daemon [socket] [memory-socket]`. Direct `ProjectRust`, `List`, and Logos `Subscribe` behavior remains. Automatic cross-daemon projection can return only through a separately designed stateful event/archive boundary.
 
 ## Exact train
 

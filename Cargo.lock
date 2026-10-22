@@ -133,7 +133,7 @@ dependencies = [
  "protos",
  "raw-discovery",
  "rkyv",
- "signal-sema-translator",
+ "signal-memory-translator",
  "structural-codec",
  "thiserror",
 ]
@@ -150,7 +150,7 @@ dependencies = [
  "protos",
  "raw-discovery",
  "rkyv",
- "signal-sema-translator",
+ "signal-memory-translator",
  "structural-codec",
  "thiserror",
 ]
@@ -170,7 +170,7 @@ dependencies = [
  "raw-discovery",
  "rkyv",
  "rust-logos",
- "signal-sema-translator",
+ "signal-memory-translator",
  "structural-codec",
  "thiserror",
 ]
@@ -404,7 +404,7 @@ dependencies = [
  "rust-logos",
  "signal-logos",
  "signal-memory-storage",
- "signal-sema-translator",
+ "signal-memory-translator",
  "structural-codec",
  "tempfile",
  "thiserror",
@@ -630,7 +630,7 @@ dependencies = [
  "quote",
  "raw-discovery",
  "rkyv",
- "signal-sema-translator",
+ "signal-memory-translator",
  "structural-codec",
  "syn",
  "thiserror",
@@ -732,14 +732,14 @@ dependencies = [
  "name-table 0.1.0",
  "rkyv",
  "signal-frame",
- "signal-sema-translator",
+ "signal-memory-translator",
  "thiserror",
 ]
 
 [[package]]
-name = "signal-sema-translator"
+name = "signal-memory-translator"
 version = "0.4.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-translator.git?rev=3a26cb43f8ce7f9fe85da64d19aa55aa662943ce#3a26cb43f8ce7f9fe85da64d19aa55aa662943ce"
+source = "git+https://github.com/LiGoldragon/signal-memory-translator.git?rev=3a26cb43f8ce7f9fe85da64d19aa55aa662943ce#3a26cb43f8ce7f9fe85da64d19aa55aa662943ce"
 dependencies = [
  "blake3",
  "name-table 0.3.0",

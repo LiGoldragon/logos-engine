@@ -9,7 +9,7 @@ use tokio::{
 };
 
 type AnyError = Box<dyn std::error::Error + Send + Sync>;
-const USAGE: &str = "usage: logos-engine daemon [socket] [sema-socket] | project <socket> <hash> | subscribe <socket>";
+const USAGE: &str = "usage: logos-engine daemon [socket] [memory-socket] | project <socket> <hash> | subscribe <socket>";
 
 struct FramedSocket {
     stream: UnixStream,
@@ -78,17 +78,17 @@ async fn main() -> Result<(), AnyError> {
                     .next()
                     .unwrap_or_else(|| "/tmp/new-language-engine/logos.sock".into()),
             );
-            let sema = PathBuf::from(
+            let memory = PathBuf::from(
                 arguments
                     .next()
-                    .unwrap_or_else(|| "/tmp/new-language-engine/sema.sock".into()),
+                    .unwrap_or_else(|| "/tmp/new-language-engine/memory.sock".into()),
             );
             if let Some(parent) = socket.parent() {
                 std::fs::create_dir_all(parent)?;
             }
             let _ = std::fs::remove_file(&socket);
             let listener = UnixListener::bind(&socket)?;
-            let runtime = Runtime::new(sema);
+            let runtime = Runtime::new(memory);
             println!("READY {}", socket.display());
             loop {
                 let (stream, _) = listener.accept().await?;
@@ -214,7 +214,7 @@ mod tests {
     fn daemon_surface_names_only_its_store_socket() {
         assert_eq!(
             USAGE,
-            "usage: logos-engine daemon [socket] [sema-socket] | project <socket> <hash> | subscribe <socket>"
+            "usage: logos-engine daemon [socket] [memory-socket] | project <socket> <hash> | subscribe <socket>"
         );
     }
 }
