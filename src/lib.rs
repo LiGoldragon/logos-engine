@@ -8,7 +8,7 @@ use kameo::{
 use name_table::{Name, TableAddress};
 use rust_logos::{FixtureRustVocabulary, FixtureRustVocabularyIds, RustLogos};
 use signal_logos::{ProjectionEvent, Rejection, Reply, Request};
-use signal_sema_storage::{
+use signal_memory_storage::{
     CodecError as StorageCodecError, DocumentKind, DocumentPayload, FrameMessage,
     Reply as SemaReply, Request as SemaRequest, SubscriptionIdentifier, VocabularyNameTableArchive,
     WholeLogosArchive, Wire,
@@ -193,7 +193,7 @@ impl Message<Dispatch> for NexusPlane {
                 let SemaReply::Document(Some(document)) = fetched else {
                     return Ok(Reply::Rejected(Rejection::LogosNotFound));
                 };
-                let summary = signal_sema_storage::SlotSummary {
+                let summary = signal_memory_storage::SlotSummary {
                     key: document.key.clone(),
                     version: document.version,
                     hash: document.hash,
@@ -330,7 +330,7 @@ mod tests {
         Declaration, Name, OperationKey, RootDeclaration, SealRequest, TableAddress,
         TableMutability,
     };
-    use signal_sema_storage::{VocabularyNameTableArchive, WholeLogosArchive};
+    use signal_memory_storage::{VocabularyNameTableArchive, WholeLogosArchive};
     use signal_sema_translator::{VocabularyEncodedId, VocabularyNameTable, VocabularyRoot};
 
     use super::{Error, project_archived_logos};

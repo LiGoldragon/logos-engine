@@ -2,7 +2,7 @@ use std::{env, path::PathBuf};
 
 use logos_engine::Runtime;
 use signal_logos::{Reply, Request, encode_reply, encode_request};
-use signal_sema_storage::{ContentHash, FixtureScope, FrameMessage, Wire};
+use signal_memory_storage::{ContentHash, FixtureScope, FrameMessage, Wire};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{UnixListener, UnixStream},

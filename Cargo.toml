@@ -14,7 +14,7 @@ name-table={git="https://github.com/LiGoldragon/name-table.git",rev="a22f48d8040
 rkyv={version="0.8",features=["bytecheck"]}
 rust-logos={git="https://github.com/LiGoldragon/rust-logos.git",rev="250e728fa9e5a02e3c9a6d4f0cfee0683863df83"}
 signal-logos={git="https://github.com/LiGoldragon/signal-logos.git",rev="a7eead9e278503ffb6afce1bb0768c32d5dbe176"}
-signal-sema-storage={git="https://github.com/LiGoldragon/signal-sema-storage.git",rev="3f64b1ff99318ac43908fab14dc30aa3b375c649"}
+signal-memory-storage={git="https://github.com/LiGoldragon/signal-memory-storage.git",rev="939f17989571ca84e2c383e1b96f31febfee334a"}
 signal-sema-translator={git="https://github.com/LiGoldragon/signal-sema-translator.git",rev="3a26cb43f8ce7f9fe85da64d19aa55aa662943ce"}
 structural-codec={git="https://github.com/LiGoldragon/structural-codec.git",rev="413e3744569ca237e837a1fd57d9ba6ad6adc3de"}
 tokio={version="1",features=["macros","rt-multi-thread","net","io-util","sync","time"]}

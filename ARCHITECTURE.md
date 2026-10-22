@@ -1,6 +1,6 @@
 # logos-engine architecture
 
-`logos-engine` is a real daemon and thin CLI. In the currently wired legacy topology, its Signal → Nexus → SEMA actor path fetches a Logos document through the central socket. The approved target remains a stateful Logos daemon whose own embedded sema database stores its state; the separate translator daemon owns only shared naming and encoded-ID allocation. This migration does not extend or present the central store as the target architecture.
+`logos-engine` is a real daemon and thin CLI. In the currently wired legacy topology, its Signal → Nexus → SEMA actor path fetches a Logos document through the central socket. The approved target remains a stateful Logos daemon whose own embedded memory database stores its state; the separate translator daemon owns only shared naming and encoded-ID allocation. This migration does not extend or present the central store as the target architecture.
 
 ## Stored truth and projection
 
@@ -23,6 +23,6 @@ The former CLI accepted a Nomos socket and drove projection from `signal-nomos::
 
 ## Exact train
 
-The normal graph pins the published current owners it actually uses: `signal-sema-storage` 0.3.0, `signal-logos` 0.2.0, `core-nomos` 0.39.0, `core-logos` 0.25.0, and `rust-logos` 0.29.0. The current storage, whole-Logos, nested naming, translator, and Rust projection owners each resolve to one revision. `signal-nomos` is deliberately absent because this engine implements no current Nomos operation; keeping an unused compatibility pin would claim ownership the engine does not have. Older name-table/content-identity crates remain only where the current producers deliberately retain their legacy internal surfaces; no obsolete aggregate-Protos or core-schema archive owner participates in the engine's live Logos path.
+The normal graph pins the published current owners it actually uses: `signal-memory-storage` 0.3.0, `signal-logos` 0.2.0, `core-nomos` 0.39.0, `core-logos` 0.25.0, and `rust-logos` 0.29.0. The current storage, whole-Logos, nested naming, translator, and Rust projection owners each resolve to one revision. `signal-nomos` is deliberately absent because this engine implements no current Nomos operation; keeping an unused compatibility pin would claim ownership the engine does not have. Older name-table/content-identity crates remain only where the current producers deliberately retain their legacy internal surfaces; no obsolete aggregate-Protos or core-schema archive owner participates in the engine's live Logos path.
 
 This is the archive-truth migration required by `primary-e68.4`. It does not begin the separately staged identity car: no content identity is minted, inferred, rebound, or converted here.

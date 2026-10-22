@@ -403,7 +403,7 @@ dependencies = [
  "rkyv",
  "rust-logos",
  "signal-logos",
- "signal-sema-storage",
+ "signal-memory-storage",
  "signal-sema-translator",
  "structural-codec",
  "tempfile",
@@ -718,14 +718,14 @@ version = "0.2.0"
 source = "git+https://github.com/LiGoldragon/signal-logos.git?rev=a7eead9e278503ffb6afce1bb0768c32d5dbe176#a7eead9e278503ffb6afce1bb0768c32d5dbe176"
 dependencies = [
  "rkyv",
- "signal-sema-storage",
+ "signal-memory-storage",
  "thiserror",
 ]
 
 [[package]]
-name = "signal-sema-storage"
+name = "signal-memory-storage"
 version = "0.3.0"
-source = "git+https://github.com/LiGoldragon/signal-sema-storage.git?rev=3f64b1ff99318ac43908fab14dc30aa3b375c649#3f64b1ff99318ac43908fab14dc30aa3b375c649"
+source = "git+https://github.com/LiGoldragon/signal-memory-storage.git?rev=939f17989571ca84e2c383e1b96f31febfee334a#939f17989571ca84e2c383e1b96f31febfee334a"
 dependencies = [
  "content-identity 0.3.0",
  "core-logos",
